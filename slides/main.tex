@@ -1,0 +1,77 @@
+ 
+% !TeX spellcheck = en_UK
+
+\documentclass[10pt]{beamer}
+\usepackage{mystyle}
+
+\begin{document}
+\section{Reeb graph}
+
+\subsection{Definition}
+\begin{frame*}
+Given:
+\begin{itemize}
+\item a manifold $\mathcal{M}$;
+\item a Morse function $\map{f}{\mathcal{M}}{\RR}$ with distinct critical values;
+\end{itemize}
+the \defterm{Reeb graph} of $f$ is the $1$-dimensional simplicial complex
+\[
+\mathcal{R}(f)=\mathcal{M}/\sidenote[text height=height("I"))]{\sim}{\draw node[draw,circle,inner sep=5pt] (source)  {} node[text width=4cm,anchor=north west] (target) at (.3,-.3) {$x\sim y$ if they belong to the same connected component of $f^{-1}(f(x))$} (source) to[out=-90,in=170] ([yshift=-7pt]target.north west);}.
+\]
+The \defterm{segmentation map} is the quotient map
+\[
+\map{\Phi}{\mathcal{M}}{\mathcal{R}(f)}.
+\]
+\end{frame*}
+
+\subsection*{Desired algorithm}
+\begin{frame*}
+\textbf{Input:}
+\begin{itemize}
+\item \textcolor{gray}{a $2$-dimensional PL manifold $\mathcal{M}$}\\
+$\leadsto$ a triangulated mesh $\mathcal{M}$;
+\item \textcolor{gray}{a non-degenerate PL scalar field $f$ on $\mathcal{M}$}\\
+$\leadsto$ a \sidenotehighlight{scalar value}{\draw node[anchor=north west,text width=4cm] (target) at (.5, -.3) {pairwise different, in order to ensure non-degeneracy; this can be achieved by random perturbations} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $f(v)$ for each vertex $v$ of $\mathcal{M}$.
+\end{itemize}
+\vspace{.4cm}
+\textbf{Output:}
+\begin{itemize}
+\item the \sidenotehighlight{augmented}{\draw node[anchor=north west] (target) at (.5,-.3) {graph $+$ segmentation map} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} Reeb graph $\mathcal{R}(f)$.
+\end{itemize}
+\vspace{.4cm}
+\textbf{Time complexity:}
+\begin{itemize}
+\item $O(m\cdot\log m)$, where $m$ is the \sidenotehighlight{size}{\draw node[anchor=north east] (target) at (-.5,-.3) {$\#\text{vertices}+\#\text{edges}+\#\text{triangles}$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);} of $\mathcal{M}$.
+\end{itemize}
+\vspace{.4cm}
+\textbf{Parallelizable.}
+\end{frame*}
+
+\subsection{Geometry of critical points}
+\begin{frame*}
+There are three kinds of critical points:
+\begin{itemize}
+\item \textcolor{gray}{(local)} maximums\\
+$\leadsto$ empty $\Link^+$;
+\item \textcolor{gray}{(local)} minimums\\
+$\leadsto$ empty $\Link^-$;
+\item saddles\\
+$\leadsto$ disconnected $\Link^-$ and $\Link^+$.
+\end{itemize}
+
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.65\textwidth}
+\begin{block}{How to detect them on a PL manifold?}
+Given a vertex $v$, the \defterm{star} of $v$ is the union of all simplices containing $v$.\\
+The \defterm{link} of $v$ is the boundary of its star.
+\begin{align*}
+\Link^+(v)&=\left\{x\in\Link(v):f(x)>f(v)\right\}\\
+\Link^-(v)&=\left\{x\in\Link(v):f(x)<f(v)\right\}\\
+\end{align*}
+\end{block}
+\end{column}
+\begin{column}{.35\textwidth}
+\end{column}
+\end{columns}
+\end{frame*}
+\end{document}

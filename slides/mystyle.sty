@@ -1,0 +1,25 @@
+\ProvidesPackage{mystyle}
+
+\usepackage{comment}
+
+% Beamer
+\setbeamertemplate{navigation symbols}{}
+\newenvironment{frame*}{\begin{frame}{\secname}{\subsecname}}{\end{frame}}
+
+% Graphics
+\input{graphics}
+
+% Notes
+\usetikzlibrary{tikzmark}
+\newcommand*{\sidenote}[3][]{\tikzmarknode[#1]{mymark}{#2}\begin{tikzpicture}[overlay,remember picture,shift=(mymark),blue!70!black!70,-latex,font=\footnotesize]#3\end{tikzpicture}}
+\newcommand*{\sidenotehighlight}[2]{\sidenote[fill=blue!70!black!30,text height=height("I"), text depth=depth("g"),inner ysep=1]{#1}{#2}}
+
+% Text formatting
+\newcommand*{\defterm}[1]{\textbf{#1}}
+
+% Maths
+\newcommand*{\map}[3]{#1\colon#2\mathchoice{\longrightarrow}{\to}{\to}{\to}#3}
+\newcommand*{\RR}{\mathbb{R}}
+
+% DeclareMathOperator
+\DeclareMathOperator{\Link}{Link}
