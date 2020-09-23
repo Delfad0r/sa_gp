@@ -1,10 +1,10 @@
- 
 % !TeX spellcheck = en_UK
 
 \documentclass[10pt]{beamer}
 \usepackage{mystyle}
 
 \begin{document}
+
 \section{Reeb graph}
 
 \subsection{Definition}
@@ -28,7 +28,7 @@ The \defterm{segmentation map} is the quotient map
 \begin{frame*}
 \textbf{Input:}
 \begin{itemize}
-\item \textcolor{gray}{a $2$-dimensional PL manifold $\mathcal{M}$}\\
+\item \textcolor{gray}{a PL manifold $\mathcal{M}$}\\
 $\leadsto$ a triangulated mesh $\mathcal{M}$;
 \item \textcolor{gray}{a non-degenerate PL scalar field $f$ on $\mathcal{M}$}\\
 $\leadsto$ a \sidenotehighlight{scalar value}{\draw node[anchor=north west,text width=4cm] (target) at (.5, -.3) {pairwise different, in order to ensure non-degeneracy; this can be achieved by random perturbations} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $f(v)$ for each vertex $v$ of $\mathcal{M}$.
@@ -41,7 +41,7 @@ $\leadsto$ a \sidenotehighlight{scalar value}{\draw node[anchor=north west,text 
 \vspace{.4cm}
 \textbf{Time complexity:}
 \begin{itemize}
-\item $O(m\cdot\log m)$, where $m$ is the \sidenotehighlight{size}{\draw node[anchor=north east] (target) at (-.5,-.3) {$\#\text{vertices}+\#\text{edges}+\#\text{triangles}$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);} of $\mathcal{M}$.
+\item $O(m\cdot\log m)$, where $m$ is the \sidenotehighlight{size}{\draw node[anchor=north east] (target) at (-.5,-.3) {$\#\text{vertices}+\#\text{edges}+\#\text{triangles}$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);} of the $2$-skeleton of $\mathcal{M}$.
 \end{itemize}
 \vspace{.4cm}
 \textbf{Parallelizable.}
@@ -51,14 +51,13 @@ $\leadsto$ a \sidenotehighlight{scalar value}{\draw node[anchor=north west,text 
 \begin{frame*}
 There are three kinds of critical points:
 \begin{itemize}
-\item \textcolor{gray}{(local)} maximums\\
-$\leadsto$ empty $\Link^+$;
-\item \textcolor{gray}{(local)} minimums\\
-$\leadsto$ empty $\Link^-$;
-\item saddles\\
-$\leadsto$ disconnected $\Link^-$ and $\Link^+$.
+\item \textcolor{gray}{(local)} \textbf{maximums}\\
+$\leadsto$ $\Link^+$ empty;
+\item \textcolor{gray}{(local)} \textbf{minimums}\\
+$\leadsto$ $\Link^-$ empty;
+\item \textbf{saddles}\\
+$\leadsto$ $\Link^-$ or $\Link^+$ disconnected.
 \end{itemize}
-
 \begin{columns}[T,onlytextwidth]
 \begin{column}{.65\textwidth}
 \begin{block}{How to detect them on a PL manifold?}
@@ -73,5 +72,56 @@ The \defterm{link} of $v$ is the boundary of its star.
 \begin{column}{.35\textwidth}
 \end{column}
 \end{columns}
+\end{frame*}
+
+\subsection*{Significance of critical points}
+\begin{frame*}
+The critical points of $f$ are closely related to the topology of the Reeb graph $\mathcal{R}(f)$.
+\begin{itemize}
+\item \textbf{Maximums} and \textbf{minimums}\\
+$\leadsto$ nodes of valence $1$ (leaves).
+\item \textbf{Saddles}\\
+$\leadsto$ nodes of valence $\ge 2$.\\
+\begin{itemize}
+\item \textbf{Join saddles}: multiple components below.\tikzmarknode{prev}{}
+\item \textbf{Split saddles}: multiple components above.\sidenote{}{\draw[-,decorate,decoration={brace,mirror}] ($(mymark)+(.3em,-.3em)$) -- node[right,inner xsep=10pt,align=left] {non-mutually exclusive\\in dimension $\ge 3$} ($(mymark |- prev)+(.3em,1em)$);}
+\end{itemize}
+\end{itemize}
+\end{frame*}
+
+\section*{Sequential algorithm}
+
+\subsection*{Informal description}
+\begin{frame*}
+\begin{itemize}
+\item Process the vertices of the mesh by \textbf{increasing} value of $f$.
+\item Construct the Reeb graph $\mathcal{R}(f)$ incrementally.
+\item While sweeping upwards, keep:
+\begin{itemize}
+\item the \textbf{partial Reeb graph} constructed so far;
+\item the current \sidenotehighlight{\textbf{level set}}{\draw node[anchor=north west,text width=3.7cm] (target) at (.5,-.3) {each connected component corresponds to an open edge of the partial Reeb graph} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $f^{-1}(r)$.
+\end{itemize}
+\item When processing a vertex, \textbf{update} the level set and the Reeb graph accordingly.
+\end{itemize}
+\end{frame*}
+
+\subsection*{The preimage graph}
+\begin{frame*}
+The level set $f^{-1}(r)$ can be represented by an abstract \textbf{graph} $G_r$: % if it does not contain any vertices
+\begin{itemize}
+\item \textbf{nodes} $\leadsto$ edges of the mesh $\mathcal{M}$;
+\item \textbf{edges} $\leadsto$ \sidenotehighlight{triangles}{\draw node[anchor=north west,text width=3.5cm] (target) at (.5,-.3) {a triangle connects its two sides intersecting $f^{-1}(r)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} of $\mathcal{M}$ intersecting $f^{-1}(r)$.
+\end{itemize}
+\begin{block}{Updating $G_r$}
+\begin{itemize}
+\item \textbf{Trigger}: \sidenotehighlight{update}{\draw node[anchor=north west] (target) at (.5,-.3) {from $G_{r-\epsilon}$ to $G_{r+\epsilon}$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} when $r=f(v)$ for some vertex $v$.\\
+\item \textbf{Action}: process each triangle $\mathcal{T}$ of $\Star(v)$ separately.
+\begin{enumerate}
+\item $v$ is the lower vertex of $\mathcal{T}$.
+\item $v$ is the middle vertex of $\mathcal{T}$.
+\item $v$ is the upper vertex of $\mathcal{T}$.
+\end{enumerate}
+\end{itemize}
+\end{block}
 \end{frame*}
 \end{document}
