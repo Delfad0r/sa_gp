@@ -114,14 +114,73 @@ The level set $f^{-1}(r)$ can be represented by an abstract \textbf{graph} $G_r$
 \end{itemize}
 \begin{block}{Updating $G_r$}
 \begin{itemize}
-\item \textbf{Trigger}: \sidenotehighlight{update}{\draw node[anchor=north west] (target) at (.5,-.3) {from $G_{r-\epsilon}$ to $G_{r+\epsilon}$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} when $r=f(v)$ for some vertex $v$.\\
+\item \textbf{Trigger}: \sidenotehighlight{update}{\draw node[anchor=north west] (target) at (.5,-.3) {from $r=f(v)-\epsilon$ to $r=f(v)+\epsilon$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} when processing a vertex $v$\\
 \item \textbf{Action}: process each triangle $\mathcal{T}$ of $\Star(v)$ separately.
 \begin{enumerate}
 \item $v$ is the lower vertex of $\mathcal{T}$.
 \item $v$ is the middle vertex of $\mathcal{T}$.
 \item $v$ is the upper vertex of $\mathcal{T}$.
 \end{enumerate}
+\item \textbf{Data structure}: the following operations are required;
+\begin{itemize}
+\item \texttt{find} the connected component of a node $e$;
+\item \texttt{insert} a new edge between nodes $e_1$, $e_2$;
+\item \texttt{delete} the edge between nodes $e_1$, $e_2$;
+\end{itemize}
+$\leadsto$ \sidenotehighlight{offline}{} dynamic connectivity problem $\leadsto$ \sidenotehighlight{\textbf{ST-trees}}{\draw node[anchor=north east] (target) at (-.5,-.3) {support all the operations in $O(\log m)$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);}
 \end{itemize}
 \end{block}
+\end{frame*}
+
+\subsection*{The augmented Reeb graph}
+\begin{frame*}
+The partial augmented Reeb graph is represented by a pair $(\sidenotehighlight{\mathcal{R}}{\draw node[anchor=south east,align=right] (target) at (-.5,.3) {Reeb graph constructed so far;\\has one open edge for each component of $G_r$} (mymark) to[out=90,in=-10] ([yshift=-7pt]target.north east);},\sidenotehighlight{\Phi}{\draw node[anchor=north east,align=right] (target) at (-.5,-.3) {partial segmentation map;\\maps each vertex of the mesh to a node or an edge of $\mathcal{R}$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);})$.
+\begin{block}{Updating $(\mathcal{R},\Phi)$}
+When processing a vertex $v$:
+\begin{enumerate}
+\item \textbf{Let} $\sidenotehighlight{\operatorname{Lc}}{\draw node[anchor=north west] (target) at (.5,-.3) {lower components} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}=\left\{G_{f(v)-\epsilon}\texttt{.find}([vv']):v'\in\Link^-(v)\right\}$.
+\item \textbf{Let} $\operatorname{Uc}=\left\{G_{f(v)+\epsilon}\texttt{.find}([vv']):v'\in\Link^+(v)\right\}$.
+\item \textbf{If} $|\operatorname{Lc}|=|\operatorname{Uc}|=1$ \textbf{then}:
+\begin{itemize}
+\item $\mathcal{R}$ is unchanged;
+\item $\Phi(v)=\text{the open edge associated to the lower component}$.
+\end{itemize}
+\item \textbf{Otherwise}:
+\begin{itemize}
+\item create a new vertex $w$ in $\mathcal{R}$;
+\item all the open edges associated to the lower components end at $w$;
+\item open a new edge in $\mathcal{R}$ starting at $w$ for each upper component.
+\item $\Phi(v)=w$.
+\end{itemize}
+\end{enumerate}
+\end{block}
+\end{frame*}
+
+\subsection*{Full algorithm}
+\begin{frame*}
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+\SetKwFunction{GetLowerComponents}{GetLowerComponents}
+\SetKwFunction{GetUpperComponents}{GetUpperComponents}
+\SetKwFunction{UpdatePreimageGraph}{UpdatePreimageGraph}
+\SetKwFunction{UpdateReebGraph}{UpdateReebGraph}
+
+\Input{a triangulated mesh $\mathcal{M}$\newline a scalar field $f$ on $\mathcal{M}$}
+\Output{the augmented Reeb graph $(\mathcal{R},\Phi)$}
+\Begin{
+$\mathcal{R}$, $\Phi$ $\leftarrow$ $\emptyset$ \textcolor{gray}{[graph]}, $\emptyset$ \textcolor{gray}{[function]}\;
+$G$ $\leftarrow$ $\emptyset$ \textcolor{gray}{[ST-tree]}\;
+sort the vertices of $\mathcal{M}$ by increasing value of $f$\;
+\ForEach{$v$ vertex of $\mathcal{M}$}{
+    $\operatorname{Lc}$ $\leftarrow$ \GetLowerComponents{$v$}\;
+    \UpdatePreimageGraph{}\;
+    $\operatorname{Uc}$ $\leftarrow$ \GetUpperComponents{$v$}\;
+    \lIf{$|\operatorname{Lc}|=|\operatorname{Uc}|=1$}{update $\Phi(v)$}
+    \lElse{\UpdateReebGraph{$v$, $\operatorname{Lc}$, $\operatorname{Uc}$}}
+}
+\Return{$(\mathcal{R},\Phi)$}
+}
+\end{algorithm}
 \end{frame*}
 \end{document}
