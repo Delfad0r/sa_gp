@@ -3,184 +3,50 @@
 \documentclass[10pt]{beamer}
 \usepackage{mystyle}
 
+\includeonly{}
 \begin{document}
 
-\section{Reeb graph}
+\include{reeb-graph}
+\include{sequential-algorithm}
 
-\subsection{Definition}
-\begin{frame*}
-Given:
-\begin{itemize}
-\item a manifold $\mathcal{M}$;
-\item a Morse function $\map{f}{\mathcal{M}}{\RR}$ with distinct critical values;
-\end{itemize}
-the \defterm{Reeb graph} of $f$ is the $1$-dimensional simplicial complex
-\[
-\mathcal{R}(f)=\mathcal{M}/\sidenote[text height=height("I"))]{\sim}{\draw node[draw,circle,inner sep=5pt] (source)  {} node[text width=4cm,anchor=north west] (target) at (.3,-.3) {$x\sim y$ if they belong to the same connected component of $f^{-1}(f(x))$} (source) to[out=-90,in=170] ([yshift=-7pt]target.north west);}.
-\]
-The \defterm{segmentation map} is the quotient map
-\[
-\map{\Phi}{\mathcal{M}}{\mathcal{R}(f)}.
-\]
-\end{frame*}
+\section{Parallel algorithm}
 
-\subsection*{Desired algorithm}
+\subsection*{Core ideas}
 \begin{frame*}
-\textbf{Input:}
 \begin{itemize}
-\item \textcolor{gray}{a PL manifold $\mathcal{M}$}\\
-$\leadsto$ a triangulated mesh $\mathcal{M}$;
-\item \textcolor{gray}{a non-degenerate PL scalar field $f$ on $\mathcal{M}$}\\
-$\leadsto$ a \sidenotehighlight{scalar value}{\draw node[anchor=north west,text width=4cm] (target) at (.5, -.3) {pairwise different, in order to ensure non-degeneracy; this can be achieved by random perturbations} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $f(v)$ for each vertex $v$ of $\mathcal{M}$.
-\end{itemize}
-\vspace{.4cm}
-\textbf{Output:}
+\item[{\tikz\node[inner sep=0,opacity=.5]{\usebeamertemplate**{itemize item}};}] \textcolor{gray}{\textbf{Sequential}: single procedure sweeping all the vertices sequentially.}
+\item \textbf{Parallel}: multiple procedures (local growths) running simultaneously.
 \begin{itemize}
-\item the \sidenotehighlight{augmented}{\draw node[anchor=north west] (target) at (.5,-.3) {graph $+$ segmentation map} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} Reeb graph $\mathcal{R}(f)$.
-\end{itemize}
-\vspace{.4cm}
-\textbf{Time complexity:}
-\begin{itemize}
-\item $O(m\cdot\log m)$, where $m$ is the \sidenotehighlight{size}{\draw node[anchor=north east] (target) at (-.5,-.3) {$\#\text{vertices}+\#\text{edges}+\#\text{triangles}$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);} of the $2$-skeleton of $\mathcal{M}$.
-\end{itemize}
-\vspace{.4cm}
-\textbf{Parallelizable.}
-\end{frame*}
-
-\subsection{Geometry of critical points}
-\begin{frame*}
-There are three kinds of critical points:
-\begin{itemize}
-\item \textcolor{gray}{(local)} \textbf{maximums}\\
-$\leadsto$ $\Link^+$ empty;
-\item \textcolor{gray}{(local)} \textbf{minimums}\\
-$\leadsto$ $\Link^-$ empty;
-\item \textbf{saddles}\\
-$\leadsto$ $\Link^-$ or $\Link^+$ disconnected.
-\end{itemize}
-\begin{columns}[T,onlytextwidth]
-\begin{column}{.65\textwidth}
-\begin{block}{How to detect them on a PL manifold?}
-Given a vertex $v$, the \defterm{star} of $v$ is the union of all simplices containing $v$.\\
-The \defterm{link} of $v$ is the boundary of its star.
-\begin{align*}
-\Link^+(v)&=\left\{x\in\Link(v):f(x)>f(v)\right\}\\
-\Link^-(v)&=\left\{x\in\Link(v):f(x)<f(v)\right\}\\
-\end{align*}
-\end{block}
-\end{column}
-\begin{column}{.35\textwidth}
-\end{column}
-\end{columns}
-\end{frame*}
-
-\subsection*{Significance of critical points}
-\begin{frame*}
-The critical points of $f$ are closely related to the topology of the Reeb graph $\mathcal{R}(f)$.
-\begin{itemize}
-\item \textbf{Maximums} and \textbf{minimums}\\
-$\leadsto$ nodes of valence $1$ (leaves).
-\item \textbf{Saddles}\\
-$\leadsto$ nodes of valence $\ge 2$.\\
-\begin{itemize}
-\item \textbf{Join saddles}: multiple components below.\tikzmarknode{prev}{}
-\item \textbf{Split saddles}: multiple components above.\sidenote{}{\draw[-,decorate,decoration={brace,mirror}] ($(mymark)+(.3em,-.3em)$) -- node[right,inner xsep=10pt,align=left] {non-mutually exclusive\\in dimension $\ge 3$} ($(mymark |- prev)+(.3em,1em)$);}
+\item A local growth is started at every minimum.
+\item Each local growth explores the mesh with an ordered BFS.
+\item Each local growth updates its own preimage graph $G_r$.
+\item \textbf{Join saddles}: wait until all involved local growths have reached the saddle, then join them.
+\item \textbf{Split saddles}: the new open edges in $\mathcal{R}(f)$ are handled by the same local growth.
 \end{itemize}
 \end{itemize}
 \end{frame*}
 
-\section*{Sequential algorithm}
-
-\subsection*{Informal description}
+\subsection*{Local growths}
 \begin{frame*}
+\begin{block}{Data structures}
+Each local growth keeps:
 \begin{itemize}
-\item Process the vertices of the mesh by \textbf{increasing} value of $f$.
-\item Construct the Reeb graph $\mathcal{R}(f)$ incrementally.
-\item While sweeping upwards, keep:
-\begin{itemize}
-\item the \textbf{partial Reeb graph} constructed so far;
-\item the current \sidenotehighlight{\textbf{level set}}{\draw node[anchor=north west,text width=3.7cm] (target) at (.5,-.3) {each connected component corresponds to an open edge of the partial Reeb graph} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $f^{-1}(r)$.
-\end{itemize}
-\item When processing a vertex, \textbf{update} the level set and the Reeb graph accordingly.
-\end{itemize}
-\end{frame*}
-
-\subsection*{The preimage graph}
-\begin{frame*}
-The level set $f^{-1}(r)$ can be represented by an abstract \textbf{graph} $G_r$: % if it does not contain any vertices
-\begin{itemize}
-\item \textbf{nodes} $\leadsto$ edges of the mesh $\mathcal{M}$;
-\item \textbf{edges} $\leadsto$ \sidenotehighlight{triangles}{\draw node[anchor=north west,text width=3.5cm] (target) at (.5,-.3) {a triangle connects its two sides intersecting $f^{-1}(r)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} of $\mathcal{M}$ intersecting $f^{-1}(r)$.
-\end{itemize}
-\begin{block}{Updating $G_r$}
-\begin{itemize}
-\item \textbf{Trigger}: \sidenotehighlight{update}{\draw node[anchor=north west] (target) at (.5,-.3) {from $r=f(v)-\epsilon$ to $r=f(v)+\epsilon$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} when processing a vertex $v$\\
-\item \textbf{Action}: process each triangle $\mathcal{T}$ of $\Star(v)$ separately.
-\begin{enumerate}
-\item $v$ is the lower vertex of $\mathcal{T}$.
-\item $v$ is the middle vertex of $\mathcal{T}$.
-\item $v$ is the upper vertex of $\mathcal{T}$.
-\end{enumerate}
-\item \textbf{Data structure}: the following operations are required;
-\begin{itemize}
-\item \texttt{find} the connected component of a node $e$;
-\item \texttt{insert} a new edge between nodes $e_1$, $e_2$;
-\item \texttt{delete} the edge between nodes $e_1$, $e_2$;
-\end{itemize}
-$\leadsto$ \sidenotehighlight{offline}{} dynamic connectivity problem $\leadsto$ \sidenotehighlight{\textbf{ST-trees}}{\draw node[anchor=north east] (target) at (-.5,-.3) {support all the operations in $O(\log m)$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);}
+\item a \sidenotehighlight{\textbf{Fibonacci heap}}{\draw node[anchor=north west] (target) at (.5,-.3) {can be merged in $O(1)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $\theta$ to store candidates for the ordered BFS.
+\item an \sidenotehighlight{\textbf{ST-tree}}{\draw node[anchor=north west] (target) at (.5,-.3) {can be merged in $O(1)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $G_r$ to store the preimage graph. 
 \end{itemize}
 \end{block}
-\end{frame*}
-
-\subsection*{The augmented Reeb graph}
-\begin{frame*}
-The partial augmented Reeb graph is represented by a pair $(\sidenotehighlight{\mathcal{R}}{\draw node[anchor=south east,align=right] (target) at (-.5,.3) {Reeb graph constructed so far;\\has one open edge for each component of $G_r$} (mymark) to[out=90,in=-10] ([yshift=-7pt]target.north east);},\sidenotehighlight{\Phi}{\draw node[anchor=north east,align=right] (target) at (-.5,-.3) {partial segmentation map;\\maps each vertex of the mesh to a node or an edge of $\mathcal{R}$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);})$.
-\begin{block}{Updating $(\mathcal{R},\Phi)$}
-When processing a vertex $v$:
-\begin{enumerate}
-\item \textbf{Let} $\sidenotehighlight{\operatorname{Lc}}{\draw node[anchor=north west] (target) at (.5,-.3) {lower components} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}=\left\{G_{f(v)-\epsilon}\texttt{.find}([vv']):v'\in\Link^-(v)\right\}$.
-\item \textbf{Let} $\operatorname{Uc}=\left\{G_{f(v)+\epsilon}\texttt{.find}([vv']):v'\in\Link^+(v)\right\}$.
-\item \textbf{If} $|\operatorname{Lc}|=|\operatorname{Uc}|=1$ \textbf{then}:
-\begin{itemize}
-\item $\mathcal{R}$ is unchanged;
-\item $\Phi(v)=\text{the open edge associated to the lower component}$.
-\end{itemize}
-\item \textbf{Otherwise}:
-\begin{itemize}
-\item create a new vertex $w$ in $\mathcal{R}$;
-\item all the open edges associated to the lower components end at $w$;
-\item open a new edge in $\mathcal{R}$ starting at $w$ for each upper component.
-\item $\Phi(v)=w$.
-\end{itemize}
-\end{enumerate}
-\end{block}
-\end{frame*}
-
-\subsection*{Full algorithm}
-\begin{frame*}
-\begin{algorithm}[H]
-\DontPrintSemicolon
-\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
-\SetKwFunction{GetLowerComponents}{GetLowerComponents}
-\SetKwFunction{GetUpperComponents}{GetUpperComponents}
-\SetKwFunction{UpdatePreimageGraph}{UpdatePreimageGraph}
-\SetKwFunction{UpdateReebGraph}{UpdateReebGraph}
-
-\Input{a triangulated mesh $\mathcal{M}$\newline a scalar field $f$ on $\mathcal{M}$}
-\Output{the augmented Reeb graph $(\mathcal{R},\Phi)$}
-\Begin{
-$\mathcal{R}$, $\Phi$ $\leftarrow$ $\emptyset$ \textcolor{gray}{[graph]}, $\emptyset$ \textcolor{gray}{[function]}\;
-$G$ $\leftarrow$ $\emptyset$ \textcolor{gray}{[ST-tree]}\;
-sort the vertices of $\mathcal{M}$ by increasing value of $f$\;
-\ForEach{$v$ vertex of $\mathcal{M}$}{
-    $\operatorname{Lc}$ $\leftarrow$ \GetLowerComponents{$v$}\;
-    \UpdatePreimageGraph{}\;
-    $\operatorname{Uc}$ $\leftarrow$ \GetUpperComponents{$v$}\;
-    \lIf{$|\operatorname{Lc}|=|\operatorname{Uc}|=1$}{update $\Phi(v)$}
-    \lElse{\UpdateReebGraph{$v$, $\operatorname{Lc}$, $\operatorname{Uc}$}}
+\begin{block}{Procedure}
+\begin{procedure}[H]
+\SetKwProg{Procedure}{procedure}{}{end}
+\SetKwFunction{LocalGrowth}{LocalGrowth}
+\Procedure{\LocalGrowth{$v_0$, $\mathcal{R}$, $\Phi$}}{
+    $\theta$, $G_r$ $\leftarrow$ $\{v_0\}$ \textcolor{gray}{[Fibonacci heap]}, $\emptyset$ \textcolor{gray}{[ST-tree]}\;
+    \While{$\theta$ is not empty}{
+        $v$ $\leftarrow$ vertex in $\theta$ with minimal $f$ value\;
+        
+    }
 }
-\Return{$(\mathcal{R},\Phi)$}
-}
-\end{algorithm}
+\end{procedure}
+\end{block}
 \end{frame*}
 \end{document}
