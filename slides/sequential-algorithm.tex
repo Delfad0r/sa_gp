@@ -79,7 +79,7 @@ When processing a vertex $v$:
 \Output{the augmented Reeb graph $(\mathcal{R},\Phi)$}
 \Begin{
 $\mathcal{R}$, $\Phi$ $\leftarrow$ $\emptyset$ \textcolor{gray}{[graph]}, $\emptyset$ \textcolor{gray}{[function]}\;
-$G$ $\leftarrow$ $\emptyset$ \textcolor{gray}{[ST-tree]}\;
+$G_r$ $\leftarrow$ $\emptyset$ \textcolor{gray}{[ST-tree]}\;
 sort the vertices of $\mathcal{M}$ by increasing value of $f$\;
 \ForEach{$v$ vertex of $\mathcal{M}$}{
     $\operatorname{Lc}$ $\leftarrow$ \GetLowerComponents{$v$}\;

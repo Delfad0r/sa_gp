@@ -80,4 +80,75 @@ What if a saddle joins components from different local growths?
 }
 \end{procedure}
 \end{frame*}
+
+\subsection*{Full implementation}
+\begin{frame*}
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+\SetKwFunction{FindMinima}{FindMinima}
+\SetKwFunction{LocalGrowth}{LocalGrowth}
+\SetKwFor{ForEachParallel}{foreach}{\sidenotehighlight{in parallel}{} do}{end}
+
+\Input{a triangulated mesh $\mathcal{M}$\newline a scalar field $f$ on $\mathcal{M}$}
+\Output{the augmented Reeb graph $(\mathcal{R},\Phi)$}
+\Begin{
+$\mathcal{R}$, $\Phi$ $\leftarrow$ $\emptyset$ \textcolor{gray}{[graph]}, $\emptyset$ \textcolor{gray}{[function]}\;
+$V$ $\leftarrow$ \sidenotehighlight{\FindMinima{$\mathcal{M},f$}}{\draw node[anchor=west] (target) at (2.5,0) {easy to run in parallel} (mymark) to (target.west);}\;
+\ForEachParallel{$v_0\in V$}{
+    start procedure \LocalGrowth{$v_0,\mathcal{R},\Phi$}\;
+}
+\Return{$(\mathcal{R},\Phi)$}
+}
+\end{algorithm}
+\end{frame*}
+
+\subsection*{Optimizations}
+\begin{frame*}
+\begin{block}{\sidenote{Laziness}{\draw[shorten <=3pt] node[anchor=west] (target) at (2,0) {decreased number of operations on ST-trees} (mymark.east) to (target.west);}}
+\begin{itemize}
+\item Instead of inserting and removing edges is $G_r$, keep a \sidenotehighlight{\textbf{history list}}{\draw node[anchor=north east] (target) at (-.7,-.8) {one for each open edge in $\mathcal{R}$} (mymark.south) to[out=-90,in=10] ([yshift=-7pt]target.north east);}.
+\item When a \sidenotehighlight{critical point}{\draw node[anchor=north west,text width=4cm] (target) at (.6,-1.1) {requires a pre-processing step to identify the critical points} (mymark.south) to[out=-90,in=170] ([yshift=-7pt]target.north west);} is reached, discard all edges marked as both added and deleted.
+\item Perform all the other operations on $G_r$.
+\end{itemize}
+\end{block}
+\begin{block}{\sidenote{Dual sweep}{\draw[shorten <=3pt] node[anchor=west] (target) at (2,0) {increased number of independent local growths} (mymark.east) to (target.west);}}
+\begin{itemize}
+\item Two kinds of local growths:
+\begin{itemize}
+\item \textbf{upward local growths} $\leadsto$ as described before;
+\item \textbf{downward local growths} $\leadsto$ start from maxima and expand downwards.
+\end{itemize}
+\item Post-processing step to merge edges that have been created twice.
+\end{itemize}
+\end{block}
+\end{frame*}
+
+\section*{Results}
+
+\subsection*{Speedup}
+\begin{frame*}
+\includegraphics[width=\textwidth]{graph-speedup}
+\end{frame*}
+
+\subsection*{Number of tasks}
+\begin{frame*}
+\includegraphics[width=\textwidth]{graph-tasks}
+\end{frame*}
+
+\subsection*{Conclusion}
+\begin{frame*}
+\begin{itemize}
+\item Parallel task-based algorithm for computing the augmented Reeb graph.
+\item Improved laziness mechanism thank to the locality of growths.
+\item Dual sweep for improved parallel performance.
+\item OpenMP/\cpluspluslogo{} implementation provided.
+\end{itemize}
+\begin{block}{What next?}
+\begin{itemize}
+\item Number of tasks bounded by the number of leaves in the Reeb graph.
+\item Number of independent local growths rapidly decreases to $2$.
+\end{itemize}
+\end{block}
+\end{frame*}
 \end{document}
