@@ -1,0 +1,167 @@
+﻿\tikzset{reeb graph/.pic={
+	\begin{scope}[local bounding box=bbox]
+	\pgfkeys{/reeb graph settings/.cd,defaults,#1}
+	\end{scope}
+}}
+\pgfkeys{
+/reeb graph settings/.cd,
+thickness/.store in=\thickness,
+line width/.store in=\linewidth,
+defaults/.style={
+	thickness=.3cm,
+	line width=.5pt,
+},
+nodes n/.initial=0,
+edges n/.initial=0,
+/utils/exec={\xdef\usingcenternodes{0}},
+nodes/.style={#1},
+add node/.code 2 args={
+	\pgfkeysalso{nodes n/.get=\n,nodes n/.evaluated={int(\n+1)},nodes n/.get=\n}
+	\coordinate (\n) at #1;
+	\coordinate (\n-center) at #2;
+},
+up/.style={add node={#1}{($#1+(0,\thickness)$)}},
+down/.style={add node={#1}{($#1-(0,\thickness)$)}},
+edges/.style={add edge/.list={#1}},
+add edge/.style={edges n/.get=\m,nodes n/.get=\n,edges n/.evaluated={int(\m+1)},edges n/.get=\m,edge \m/.initial={#1},use actual nodes,/utils/exec={
+\path[decorate,decoration={markings,mark=at position 0 with{\coordinate (-start);},mark=at position -0.0001 with {\coordinate(-end);}}] #1;
+\foreach \coord in {start,end} {
+	\expandafter\xdef\csname edge \m \coord\endcsname{}
+	\tikzmath{
+	\mindist=100;
+	for \i in {1,...,\n}{
+		coordinate \p;
+		\p=(\i)-(-\coord);
+		if \mindist>veclen(\px,\py) then {
+			\mindist=veclen(\px,\py);
+			{\expandafter\xdef\csname edge \m \coord\endcsname{\i}};
+		};
+	};
+}}},
+edge \m start/.initial/.expanded={\csname edge \m start\endcsname},
+edge \m end/.initial/.expanded={\csname edge \m end\endcsname},
+},
+forall nodes/.code 2 args={\pgfkeysalso{nodes n/.get=\numberofnodes}\foreach #1 in {1,...,\numberofnodes} {\pgfkeysalso{#2}}},
+forall edges/.code 2 args={\pgfkeysalso{edges n/.get=\numberofedges}\foreach #1 in {1,...,\numberofedges} {\pgfkeysalso{#2}}},
+swap all nodes/.style={forall nodes={\i}{swap node=\i}},
+swap node/.code={\coordinate (-tmp) at (#1);\coordinate (#1) at (#1-center);\coordinate(#1-center) at (-tmp);},
+use center nodes/.code={\ifthenelse{\usingcenternodes=0}{\xdef\usingcenternodes{1}\pgfkeysalso{swap all nodes}}{}},
+use actual nodes/.code={\ifthenelse{\usingcenternodes=1}{\xdef\usingcenternodes{0}\pgfkeysalso{swap all nodes}}{}},
+outline edge/.code n args={3}{
+	\pgfkeysalso{use center nodes}
+	\pgfkeysalso{edge #1/.get=\edge}
+	\def\enlarge{
+		\def\cnt{20}
+		\xdef\leftpath{(-a)}
+		\xdef\rightpath{(-d)}
+		\path[decorate,decoration={markings,mark=between positions {1/\cnt} and {(\cnt-1)/\cnt} step {1/\cnt} with {\edef\i{\pgfkeysvalueof{/pgf/decoration/mark info/sequence number}}\coordinate (-left \i) at (0,#2);\xdef\leftpath{\leftpath (-left \i)}\coordinate (-right \i) at (0,{-(#2)});\xdef\rightpath{(-right \i) \rightpath}}}] \edge;
+		\xdef\leftpath{\leftpath (-b)}
+		\xdef\rightpath{(-c) \rightpath}
+		\tikzmath{coordinate \p;\p=(-b)-(-c);\angle1=atan2(\py,\px);\p=(-d)-(-a);\angle2=atan2(\py,\px);}
+		\path[#3] (-a) -- plot[smooth] coordinates {\leftpath} arc[start angle=\angle1,delta angle=-180,radius=#2] -- plot[smooth] coordinates {\rightpath} arc[start angle=\angle2,delta angle=-180,radius=#2] -- cycle;
+	}
+	\path[decorate,decoration={show path construction,
+		lineto code={
+			\coordinate (-a) at ($(\tikzinputsegmentfirst)!#2!90:(\tikzinputsegmentlast)$);
+			\coordinate (-d) at ($(\tikzinputsegmentfirst)!-1!(-a)$);
+			\coordinate (-c) at ($(\tikzinputsegmentlast)!#2!90:(\tikzinputsegmentfirst)$);
+			\coordinate (-b) at ($(\tikzinputsegmentlast)!-1!(-c)$);
+			\enlarge
+		},
+		curveto code={
+			\coordinate (-a) at ($(\tikzinputsegmentfirst)!#2!90:(\tikzinputsegmentsupporta)$);
+			\coordinate (-d) at ($(\tikzinputsegmentfirst)!-1!(-a)$);
+			\coordinate (-c) at ($(\tikzinputsegmentlast)!#2!90:(\tikzinputsegmentsupportb)$);
+			\coordinate (-b) at ($(\tikzinputsegmentlast)!-1!(-c)$);
+			\enlarge
+		},
+	}] \edge;
+},
+contour/.style={forall edges={\i}{outline edge={\i}{\thickness+.5*\linewidth}{fill=#1}}},contour/.default={black},
+plain background/.style={forall edges={\i}{outline edge={\i}{\thickness-.5*\linewidth}{fill=#1}}},
+node/.code 2 args={
+	\pgfkeysalso{use actual nodes}
+	\pic[pics/code={#2}] at (#1) {};
+},
+some nodes/.code 2 args={\foreach \i in {#1} {\pgfkeysalso{node={\i}{#2}}}},
+every node/.style={forall nodes={\i}{node={\i}{#1}}},
+every node but/.style 2 args={forall nodes={\i}{node={\i}{\tikzmath{
+	\ok=1;
+	for \j in {#1}{
+		if  \i==\j then {
+			\ok=0;
+		};
+	};
+	if \ok==1 then {
+		{#2};
+	};
+}}}},
+edge/.code 2 args={
+	\pgfkeysalso{use actual nodes,edge #1/.get=\edge}
+	\path[#2] \edge;
+},
+some edges/.code 2 args={\foreach \i in {#1} {\pgfkeysalso{edge={\i}{#2}}}},
+every edge/.style={forall edges={\i}{edge={\i}{#1}}},
+every edge but/.style 2 args={forall edges={\i}{/utils/exec={\tikzmath{
+	\ok=1;
+	for \j in {#1}{
+		if  \i==\j then {
+			\ok=0;
+		};
+	};
+	if \ok==1 then {
+		{\pgfkeysalso{edge={\i}{#2}}};
+	};
+}}}},
+partial edge/.code n args={3}{\begin{scope}\gdef\codeToExecuteAfterEdgeUp{}\gdef\codeToExecuteAfterEdgeDown{}\pgfkeys{reeb graph settings/.cd,edge #1/.get=\edge,partial edge settings/.cd,#3}\pgfkeysalso{edge={#1}{#2}}\end{scope}\codeToExecuteAfterEdgeUp\codeToExecuteAfterEdgeDown},
+segment/.style 2 args={partial segment={#1}{#2}{relative up to=-.0001,relative down to=0}},
+some segments/.code 2 args={\foreach \i in {#1} {\pgfkeysalso{segment={\i}{#2}}}},
+every segment/.style={forall edge={\i}{segment={\i}{#1}}},
+every segment but/.style 2 args={forall edges={\i}{/utils/exec={\tikzmath{
+	\ok=1;
+	for \j in {#1}{
+		if  \i==\j then {
+			\ok=0;
+		};
+	};
+	if \ok==1 then {
+		{\pgfkeysalso{segment={\i}{#2}}};
+	};
+}}}},
+partial segment/.code n args={3}{\begin{scope}\pgfkeys{reeb graph settings/.cd,edge #1/.get=\edge,partial segment settings/.cd,#3}\pgfkeysalso{outline edge={#1}{\thickness-.5*\linewidth}{clip}}#2\end{scope}}
+}
+\pgfkeys{
+/reeb graph settings/partial edge settings/.cd,
+get relative partial edge coordinates/.code n args={2}{\pgfkeys{/reeb graph settings/.cd,use actual nodes}\path[decorate,decoration={markings,mark=at position #2 with {\coordinate (#1);}}] \edge;},
+get absolute partial edge coordinates/.code n args={2}{\pgfkeys{/reeb graph settings/.cd,use actual nodes}\path[name path=first] \edge;\path[name path=second] (bbox.west|-0,#2) -- (bbox.east|-0,#2);\path[name intersections={of=first and second,by={#1}}];},
+clip horizontal partial segment/.code 2 args={\clip (bbox.west|-#1) rectangle (bbox.east|-#2);},
+clip horizontal segment up to/.code={\clip (bbox.south west) rectangle (bbox.east|-#1);},
+clip horizontal segment down to/.code={\clip (bbox.west|-#1) rectangle (bbox.north east);},
+relative up to/.code 2 args={\pgfkeysalso{get relative partial edge coordinates={-up}{#1},clip horizontal segment up to={-up}}\gdef\codeToExecuteAfterEdgeUp{\pic[pics/code={#2}] at (-up) {};}},
+relative down to/.code 2 args={\pgfkeysalso{get relative partial edge coordinates={-down}{#1},clip horizontal segment down to={-down}}\gdef\codeToExecuteAfterEdgeDown{\pic[pics/code={#2}] at (-down) {};}},
+absolute up to/.code 2 args={\pgfkeysalso{get absolute partial edge coordinates={-up}{#1},clip horizontal segment up to={-up}}\gdef\codeToExecuteAfterEdgeUp{\pic[pics/code={#2}] at (-up) {};}},
+absolute down to/.code 2 args={\pgfkeysalso{get absolute partial edge coordinates={-down}{#1},clip horizontal segment down to={-down}}\gdef\codeToExecuteAfterEdgeDown{\pic[pics/code={#2}] at (-down) {};}}
+}
+\pgfkeys{
+/reeb graph settings/partial segment settings/.cd,
+relative up to/.style={/reeb graph settings/partial edge settings/.cd,relative up to={#1}{}},
+absolute up to/.style={/reeb graph settings/partial edge settings/absolute up to={#1}{}},
+relative down to/.style={/reeb graph settings/partial edge settings/.cd,relative down to={#1}{}},
+absolute down to/.style={/reeb graph settings/partial edge settings/absolute down to={#1}{}},
+}
+
+\begin{tikzpicture}
+\pic{reeb graph={
+	line width=1pt,
+	nodes={up={(0,0)},up={(3,1)},up={(2,2)},down={(2,4)}},
+	add edge={(1) to[out=90,in=190] (3)},
+	add edge={(2) to[out=90,in=-10] (3)},
+	add edge={(3) to[out=90,in=-90] (4)},
+	contour,
+	plain background={gray!50},
+	segment={1}{\fill[red!50] (bbox.south west) rectangle (bbox.north east);},
+	every edge but={2}{draw=blue,thick},
+	partial edge={2}{draw=orange,thick}{relative up to={0.9}{\fill[orange] circle(2pt);},absolute down to={1.5}{\fill[green] circle(2pt);},},
+	%every node={\draw[black,line width=1pt,fill=white] circle(3pt);\fill[red] circle(1pt);},
+}};
+\end{tikzpicture}
