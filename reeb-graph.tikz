@@ -1,4 +1,4 @@
-﻿\def\colorlist{"red","lime","violet","green","orange","cyan","green!80!blue!90!black","brown!90!black","yellow","teal","pink","magenta","blue","olive"}
+﻿\def\colorlist{"red","lime!80!green","violet","green","orange","cyan","green!80!blue!90!black","brown!90!black","yellow!70!orange","teal","pink","magenta","blue","olive"}
 \newcommand{\getedgecolor}[2][\thiscolor]{\tikzmath{#1={\colorlist}[int(#2)-1];}}
 \tikzset{reeb graph/.pic={
 	\begin{scope}[local bounding box=bbox]
@@ -26,7 +26,7 @@ up/.style={add node={#1}{($#1+(0,\thickness)$)}{0}},
 down/.style={add node={#1}{($#1-(0,\thickness)$)}{1}},
 edges/.style={add edge/.list={#1}},
 add edge/.style={edges n/.get=\m,nodes n/.get=\n,edges n/.evaluated={int(\m+1)},edges n/.get=\m,edge \m/.initial={#1},use actual nodes,/utils/exec={
-\path[decorate,decoration={markings,mark=at position 0 with{\coordinate (-start);},mark=at position -0.0001 with {\coordinate(-end);}}] #1;
+\path[decorate,decoration={markings,mark=at position 0 with{\coordinate (-start);},mark=at position -.001 with {\coordinate(-end);}}] #1;
 \foreach \coord in {start,end} {
 	\tikzmath{
 	\mindist=100;
@@ -117,7 +117,7 @@ every edge but/.style 2 args={forall edges={\i}{/utils/exec={\tikzmath{
 	};
 }}}},
 partial edge/.code n args={3}{\begin{scope}\gdef\codeToExecuteAfterEdgeUp{}\gdef\codeToExecuteAfterEdgeDown{}\pgfkeys{reeb graph settings/.cd,edge #1/.get=\edge,partial edge settings/.cd,#3}\pgfkeysalso{edge={#1}{#2}}\end{scope}\codeToExecuteAfterEdgeUp\codeToExecuteAfterEdgeDown},
-segment/.style 2 args={partial segment={#1}{#2}{relative up to=-.0001,relative down to=0}},
+segment/.style 2 args={partial segment={#1}{#2}{relative up to=-.001,relative down to=0}},
 some segments/.code 2 args={\foreach \i in {#1} {\pgfkeysalso{segment={\i}{#2}}}},
 every segment/.style={forall edges={\i}{segment={\i}{#1}}},
 every segment but/.style 2 args={forall edges={\i}{/utils/exec={\tikzmath{
@@ -138,9 +138,9 @@ partial segment/.code n args={3}{
 	\def\dosegment{\begin{scope}\pgfkeysalso{outline edge={\i}{\thickness-.5*\linewidth}{clip}}#2\end{scope}}
 	\edef\i{#1}
 	\dosegment{}
-	\foreach \coord/\nocoord/\kind in {start/end/0,end/start/1}{\pgfkeysalso{edge #1start/.get=\st,node \st kind/.get=\k}\ifthenelse{\k=\kind}{\foreach \i in {1,...,\m}{\pgfkeysalso{edge \i \nocoord/.get=\j}\ifthenelse{\j=\st}{\dosegment{}}{}}}{}}
+	\foreach \coord/\nocoord/\kind in {start/end/0,end/start/1}{\pgfkeysalso{edge #1\coord/.get=\st,node \st kind/.get=\k}\ifthenelse{\k=\kind}{\foreach \i in {1,...,\m}{\pgfkeysalso{edge \i \nocoord/.get=\j}\ifthenelse{\j=\st}{\node at (0,-2) {\pgfkeysvalueof{/reeb graph settings/edge 7start}};\dosegment{}}{}}}{}}
 	\end{scope}},
-debug/.style={every edge={every to/.style={pos=.5,"\i"}},every node={\node[circle,inner sep=2pt,fill=white,draw]{\i};}},
+debug/.style={every edge={every to/.style={pos=.5,"\i",\thiscolor}},every node={\node[circle,inner sep=1pt,fill=white,draw]{\i};}},
 }
 \pgfkeys{
 /reeb graph settings/partial edge settings/.cd,
@@ -162,20 +162,44 @@ relative down to/.style={/reeb graph settings/partial edge settings/.cd,relative
 absolute down to/.style={/reeb graph settings/partial edge settings/absolute down to={#1}{}},
 }
 
-\begin{tikzpicture}
+\begin{tikzpicture}[x={(.25,0)},y={(0,.25)}]
 \pic{reeb graph={
 	line width=1pt,
 	thickness=.3cm,
-	nodes={up={(0,0)},up={(3,1)},up={(2,2)},down={(2,4)}},
+	nodes={
+		up={(0,0)},
+		up={(11,2)},
+		up={(6,5)},
+		down={(3,8)},
+		up={(11,10)},
+		up={(16,6)},
+		down={(9,13)},
+		up={(5,15)},
+		down={(4,18)},
+		up={(10,20)},
+		down={(-2,23)},
+		down={(9,25)},
+	},
 	add edge={(1) to[out=90,in=190] (3)},
 	add edge={(2) to[out=90,in=-10] (3)},
 	add edge={(3) to[out=90,in=-90] (4)},
+	add edge={(4) to[out=10,in=190] (5)},
+	add edge={(6) to[out=90,in=-10] (5)},
+	add edge={(5) to[out=90,in=-90] (7)},
+	add edge={(4) to[out=170,in=190] (8)},
+	add edge={(7) to[out=170,in=-10] (8)},
+	add edge={(8) to[out=90,in=-90] (9)},
+	add edge={(7) to[out=10,in=-10] (10)},
+	add edge={(9) to[out=10,in=190] (10)},
+	add edge={(9) to[out=170,in=-90] (11)},
+	add edge={(10) to[out=90,in=-45] (12)},
 	contour,
 	plain background={gray!50},
-	%every segment={\fill[\thiscolor!50] (bbox.south west) rectangle (bbox.north east);},
-	every edge={draw=\thiscolor,line width=1pt},
-	every node={\draw[black,line width=1pt,fill=white] circle(3pt);\fill[red] circle(1pt);},
-	debug,
+	%partial edge={7}{draw}{relative down to={0}{},relative up to={0.9}{}},
+	every segment={\fill[\thiscolor!40] (bbox.south west) rectangle (bbox.north east);},
+	every edge={preaction={draw=white,line width=2pt},draw=\thiscolor,line width=1pt},
+	every node={\draw[black,line width=1pt,fill=white] circle(2pt);},
+	%debug,
 }};
 %\foreach \c [count=\i] in \colorlist {\getedgecolor[\c]{\i}\fill[\c] (\i,0) circle (.5cm);}
-\end{tikzpicture}picture}
+\end{tikzpicture}
