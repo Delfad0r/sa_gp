@@ -193,13 +193,14 @@ absolute down to/.style={/reeb graph settings/partial edge settings/absolute dow
 	add edge={(9) to[out=10,in=190] (10)},
 	add edge={(9) to[out=170,in=-90] (11)},
 	add edge={(10) to[out=90,in=-45] (12)},
-	contour,
-	plain background={gray!50},
+	%contour,
+	%plain background={gray!50},
 	%partial edge={7}{draw}{relative down to={0}{},relative up to={0.9}{}},
-	every segment={\fill[\thiscolor!40] (bbox.south west) rectangle (bbox.north east);},
-	every edge={preaction={draw=white,line width=2pt},draw=\thiscolor,line width=1pt},
+	%every segment={\fill[\thiscolor!40] (bbox.south west) rectangle (bbox.north east);},
+	every edge={preaction={draw=black,line width=2pt},draw=\thiscolor,line width=1pt},
+	partial edge={12}{}{absolute up to={19}{\fill circle(2pt);}}
 	every node={\draw[black,line width=1pt,fill=white] circle(2pt);},
-	%debug,
+	debug,
 }};
 %\foreach \c [count=\i] in \colorlist {\getedgecolor[\c]{\i}\fill[\c] (\i,0) circle (.5cm);}
 \end{tikzpicture}

@@ -9,12 +9,34 @@ Given:
 \end{itemize}
 the \defterm{Reeb graph} of $f$ is the $1$-dimensional simplicial complex
 \[
-\mathcal{R}(f)=\mathcal{M}/\sidenote[text height=height("I"))]{\sim}{\draw node[draw,circle,inner sep=5pt] (source)  {} node[text width=4cm,anchor=north west] (target) at (.3,-.3) {$x\sim y$ if they belong to the same connected component of $f^{-1}(f(x))$} (source) to[out=-90,in=170] ([yshift=-7pt]target.north west);}.
+\mathcal{R}(f)=\mathcal{M}/\sidenote[text height=height("I"))]{\sim}{\draw node[draw,circle,inner sep=5pt] (source)  {} node[text width=4cm,anchor=north west] (target) at (.3,-.3) {$x\sim y$ if $f(x)=f(y)$ and they belong to the same connected component of $f^{-1}(f(x))$} (source) to[out=-90,in=170] ([yshift=-7pt]target.north west);}.
 \]
 The \defterm{segmentation map} is the quotient map
 \[
 \map{\Phi}{\mathcal{M}}{\mathcal{R}(f)}.
 \]
+\begin{center}
+\begin{tikzpicture}
+\path (-1,-.1) rectangle (6.5,3.0);
+\begin{scope}[small,transform canvas={scale=.5}]
+\draw[-{Latex[scale=2]}] (-11,0) to node[left,scale=2] {$f$} (-11,25);
+\draw[-{Classical TikZ Rightarrow[scale=2]}] (20,12.5) -- node[above,scale=2] {$\Phi$} (27,12.5);
+\pic{reeb graph={manifold 1,manifold bg,
+partial edge={12}{}{absolute up to={19}{\draw[\thiscolor,line width=2pt,dashed,opacity=.5] (.1,0) arc(0:180:1.6 and .5);\draw[\thiscolor,line width=2pt] (.1,0) arc (0:-180:1.6 and .5);}},
+partial edge={11}{}{absolute up to={19}{\draw[\thiscolor,line width=2pt,dashed,opacity=.5] (1.5,0) arc(0:180:1.5 and .5);\draw[\thiscolor,line width=2pt] (1.5,0) arc (0:-180:1.5 and .5);}},
+partial edge={10}{}{absolute up to={19}{\draw[\thiscolor,line width=2pt,dashed,opacity=.5] (2.0,0) arc(0:180:1.2 and .5);\draw[\thiscolor,line width=2pt] (2.0,0) arc(0:-180:1.2 and .5);}},
+}};
+\begin{scope}[xshift=8cm]
+\pic{reeb graph={manifold 1,every edge={preaction={draw=black,line width=3pt},draw=gray!40,line width=2pt},every node={\draw[black,line width=1pt,fill=white] circle(3pt);},
+partial edge={12}{}{absolute up to={19}{\fill[\thiscolor] circle(3pt);}},
+partial edge={11}{}{absolute up to={19}{\fill[\thiscolor] circle(3pt);}},
+partial edge={10}{}{absolute up to={19}{\fill[\thiscolor] circle(3pt);}},
+}};
+\end{scope}
+\end{scope}
+\end{tikzpicture}
+\end{center}
+
 \end{frame*}
 
 \subsection*{Desired algorithm}
