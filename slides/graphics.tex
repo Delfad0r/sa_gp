@@ -3,9 +3,20 @@
 \usetikzlibrary{math,calc}
 \usetikzlibrary{decorations.pathreplacing,decorations.markings}
 \usetikzlibrary{quotes}
+\usetikzlibrary{backgrounds}
 \usetikzlibrary{arrows.meta}
 \usepackage{pgfplots}
 \usepgfplotslibrary{fillbetween}
+
+\usetikzlibrary{external}
+\tikzexternalize[prefix=figures/]
+\tikzexternaldisable
+
+\tikzset{
+alt/.code args={<#1>#2#3}{\alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}},
+only/.code args={<#1>#2}{\only<#1>{\pgfkeysalso{#2}}},
+visible on/.style args={<#1>}{alt=<#1>{}{opacity=0}},
+}
 
 \newcommand{\fillsegmentcmd}[1][\thiscolor!40]{\fill[#1] (bbox.south west) rectangle (bbox.north east);}
 
@@ -128,6 +139,7 @@ outline edge/.code n args={3}{
 },
 contour/.style={forall edges={\i}{outline edge={\i}{\thickness+.5*\linewidth}{fill=#1}}},contour/.default={black},
 plain background/.style={forall edges={\i}{outline edge={\i}{\thickness-.5*\linewidth}{fill=#1}}},
+background/.style={forall edges={\i}{/utils/exec={\begin{scope}},outline edge={\i}{\thickness-.5*\linewidth}{clip},/utils/exec={#1\end{scope}}}},
 node/.code 2 args={
 	\pgfkeysalso{use actual nodes}
 	\pic[pics/code={#2}] at (#1) {};
