@@ -38,7 +38,7 @@ The \defterm{segmentation map} is the quotient map
 \scoped[shift={(0,\preimageh)}]\draw[visible on=<4>,line width=1pt,fill=preimagecol] coordinate (level set l) (-4pt,-4pt) rectangle (4pt,4pt);
 \end{scope}
 \end{onlyenv}
-\draw[visible on=<5>,line width=1pt,-{To[scale=2]}] (20,12.5) -- node[above,scale=2] {$\Phi$} (27,12.5);
+\draw[visible on=<5>,line width=1pt,-{To[scale]}] (20,12.5) -- node[above,scale=2] {$\Phi$} (27,12.5);
 \alt<2>{\pic{reeb graph={manifold 1,contour,background={\fill[top color=topcolor,bottom color=bottomcolor] (bbox.south west) rectangle (bbox.north east);}}};}
 {\pic{reeb graph={manifold 1,manifold bg,/tikz/only=<4>{
 partial edge={12}{}{absolute up to={\preimageh}{\draw[preimagecol,line width=2pt,dashed,opacity=.5] (.1,0) arc(0:180:1.6 and .5);\draw[preimagecol,line width=2pt] (.1,0) arc (0:-180:1.6 and .5);}},
@@ -67,35 +67,45 @@ partial edge={10}{}{absolute up to={\preimageh}{\fill[preimagecol] coordinate (l
 \begin{column}{.7\textwidth}
 \textbf{Input:}
 \begin{itemize}
-\item \textcolor{gray}{a PL manifold $\mathcal{M}$}\\
-$\leadsto$ a triangulated mesh $\mathcal{M}$;
-\item \textcolor{gray}{a non-degenerate PL scalar field $f$ on $\mathcal{M}$}\\
-$\leadsto$ a \sidenotehighlight{scalar value}{\draw node[anchor=north west,text width=4cm] (target) at (.5, -.3) {pairwise different, in order to ensure non-degeneracy; this can be achieved by random perturbations} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $f(v)$ for each vertex $v$ of $\mathcal{M}$.
+\item {\only<2->{\color{gray}}a PL manifold $\mathcal{M}$}\\
+\onslide<2->{$\leadsto$ a triangulated mesh $\mathcal{M}$;}
+\item<3-> {\only<4->{\color{gray}}a non-degenerate PL scalar field $f$ on $\mathcal{M}$}\\
+\onslide<4->{$\leadsto$ a \sidenotehighlight<4>{scalar value}{\draw node[anchor=north west,text width=4cm] (target) at (.5, -.3) {pairwise different, in order to ensure non-degeneracy; this can be achieved by random perturbations} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $f(v)$ for each vertex $v$ of $\mathcal{M}$.}
 \end{itemize}
 \vspace{.4cm}
+\onslide<5->{
 \textbf{Output:}
 \begin{itemize}
-\item the \sidenotehighlight{augmented}{\draw node[anchor=north west] (target) at (.5,-.3) {graph $+$ segmentation map} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} Reeb graph $\mathcal{R}(f)$.
+\item the \sidenotehighlight<5>{augmented}{\draw node[anchor=north west] (target) at (.5,-.3) {graph $+$ segmentation map} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} Reeb graph $\mathcal{R}(f)$.
 \end{itemize}
+}
 \end{column}
 \begin{column}{.3\textwidth}
 \tikzexternalenable
 \begin{tikzpicture}
-\draw (0,0) rectangle(3,3.5);
+\colorlet{topcolor}{gray!40!white!30!red}
+\colorlet{bottomcolor}{gray!40!white!30!blue}
+\path(0,0) rectangle(3,3.5);
 \begin{scope}[small,transform canvas={scale=.5},shift={(6,1)}]
-\pic{reeb graph={manifold 1,manifold bg,every edge={draw}}};
+\only<1-2>{\pic{reeb graph={manifold 1,manifold bg}};}
+\only<3-4>{\pic{reeb graph={manifold 1,contour,background={\fill[top color=topcolor,bottom color=bottomcolor] (bbox.south west) rectangle (bbox.north east);}}};}
+\only<5->{\pic{reeb graph={manifold 1,contour, every segment={\fillsegmentcmd},every edge={preaction={draw=white,line width=3pt},draw=\thiscolor,line width=2pt},every node={\draw[black,line width=1pt,fill=white] circle(3pt);}}};}
 \end{scope}
 \end{tikzpicture}
 \tikzexternaldisable
 \end{column}
 \end{columns}
 \vspace{.4cm}
+\onslide<6->{
 \textbf{Time complexity:}
 \begin{itemize}
-\item $O(m\cdot\log m)$, where $m$ is the \sidenotehighlight{size}{\draw node[anchor=north east] (target) at (-.5,-.3) {$\#\text{vertices}+\#\text{edges}+\#\text{triangles}$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);} of the $2$-skeleton of $\mathcal{M}$.
+\item $O(m\cdot\log m)$, where $m$ is the \sidenotehighlight<6>{size}{\draw node[anchor=north east] (target) at (-.5,-.3) {$\#\text{vertices}+\#\text{edges}+\#\text{triangles}$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);} of the $2$-skeleton of $\mathcal{M}$.
 \end{itemize}
+}
 \vspace{.4cm}
+\onslide<7->{
 \textbf{Parallel.}
+}
 \end{frame*}
 
 \subsection{Geometry of critical points}
