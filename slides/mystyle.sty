@@ -19,7 +19,7 @@
 \colorlet{sidenote color}{blue!70!black!70}
 \newcommand{\setsidenotecolor}[1][blue!70!black!70]{\colorlet{sidenote color}{#1}}
 \newcommand<>*{\sidenote}[3][]{\tikzmarknode[#1]{mymark}{#2}\only#4{\begin{tikzpicture}[overlay,remember picture,shift=(mymark),sidenote color,-latex,font=\footnotesize]#3\end{tikzpicture}}}
-\newcommand<>*{\sidenotehighlight}[2]{\sidenote#3[visible on=#3,text opacity=1,fill=sidenote color!42,text height=height("I"),text depth=depth("g"),inner ysep=1]{#1}{#2}}
+\newcommand<>*{\sidenotehighlight}[2]{\sidenote#3[/visible on=#3,text opacity=1,fill=sidenote color!42,text height=height("I"),text depth=depth("g"),inner ysep=1]{#1}{#2}}
 
 % Text formatting
 \newcommand*{\defterm}[1]{\textbf{#1}}

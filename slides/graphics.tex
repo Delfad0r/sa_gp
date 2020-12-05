@@ -13,10 +13,10 @@
 \tikzexternalize[prefix=figures/]
 \tikzexternaldisable
 
-\tikzset{
+\pgfkeys{
 alt/.code args={<#1>#2#3}{\alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}},
 only/.code args={<#1>#2}{\only<#1>{\pgfkeysalso{#2}}},
-visible on/.style args={<#1>}{alt=<#1>{}{opacity=0}},
+visible on/.style args={<#1>}{/alt=<#1>{}{opacity=0}},
 }
 
 \newcommand{\fillsegmentcmd}[1][\thiscolor!40]{\fill[#1] (bbox.south west) rectangle (bbox.north east);}
@@ -226,13 +226,14 @@ absolute down to/.code 2 args={
 relative slice/.code n args={3}{
 \pgfkeysalso{get relative partial edge coordinates={-slice}{#1},edgen/.get=\edgen,/reeb graph settings/.cd,outline edge={\edgen}{\thickness-.5*\linewidth}{name path=second}}
 \path[name path=first] (bbox.south west|--slice) -- (bbox.south east|--slice);
-\path[name intersections={of=first and second,name={#2}}];
+\path[name intersections={of=first and second,sort by=first,name={#2}}];
 \expandafter\gdef\expandafter\codeToExecuteAfterEdge\expandafter{\codeToExecuteAfterEdge #3}
 },
 absolute slice/.code n args={3}{
-\pgfkeysalso{get absolute partial edge coordinates={-slice}{#1},edgen/.get=\edgen,/reeb graph settings/.cd,outline edge={\edgen}{\thickness-.5*\linewidth}{name path=second}}
+\coordinate (-slice) at (0,#1);
+\pgfkeysalso{edgen/.get=\edgen,/reeb graph settings/.cd,outline edge={\edgen}{\thickness-.5*\linewidth}{name path=second}}
 \path[name path=first] (bbox.south west|--slice) -- (bbox.south east|--slice);
-\path[name intersections={of=first and second,name={#2}}];
+\path[name intersections={of=first and second,sort by=first,name={#2}}];
 \expandafter\gdef\expandafter\codeToExecuteAfterEdge\expandafter{\codeToExecuteAfterEdge #3}
 },
 }
