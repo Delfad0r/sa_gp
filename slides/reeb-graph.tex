@@ -114,63 +114,99 @@ There are three kinds of critical points:
 \begin{columns}[T,onlytextwidth]
 \begin{column}{.55\textwidth}
 \begin{itemize}
-\item \textcolor{gray}{(local)} \textbf{maxima}\\
-$\leadsto$ $\Link^+$ empty;
-\item \textcolor{gray}{(local)} \textbf{minima}\\
-$\leadsto$ $\Link^-$ empty;
-\item \textbf{saddles}\\
-$\leadsto$ $\Link^-$ or $\Link^+$ disconnected.
+\item<2-> \textcolor{gray}{(local)} \textbf{maxima}\\
+\onslide<9->{$\leadsto$ ${\color{orange}\Link^+}$ empty;}
+\item<3-> \textcolor{gray}{(local)} \textbf{minima}\\
+\onslide<10->{$\leadsto$ ${\color{violet}\Link^-}$ empty;}
+\item<4-> \textbf{saddles}\\
+\onslide<11->{$\leadsto$ ${\color{orange}\Link^+}$ or ${\color{violet}\Link^-}$ disconnected.}
 \end{itemize}
 \end{column}
 \begin{column}{.45\textwidth}
 \begin{tikzpicture}
-\matrix[cells={scale=.5},row sep=7]{
-\draw[fill=gray!40,line cap=round] (-1,1) arc(-180:0:1) -- cycle;
-\draw[fill=gray] (0,1) circle(1 and .25);
+\matrix[cells={scale=.5},row sep=7, row 1/.style={visible on=<2->},row 2/.style={visible on=<3->},row 3/.style={visible on=<4->}]{
+\draw[fill=gray!40] (-1,-1) arc(180:0:1) arc(0:-180:1 and .25);
+\draw[postaction={visible on=<10->,draw=violet,line width=1},dashed,opacity=.5,visible on=<2->] (-1,-1) arc(180:0:1 and .25);
+\draw[visible on=<10->,violet,line width=1] (-1,-1) arc(-180:0:1 and .25);
 \draw[fill=white] circle(3pt);\\
-\draw[fill=gray!40,line cap=round] (-1,-1) arc(180:0:1) arc(0:-180:1 and .25);
-\draw[dashed,opacity=.5] (-1,-1) arc(180:0:1 and .25);
+\draw[fill=gray!40] (-1,1) arc(-180:0:1) -- cycle;
+\draw[postaction={visible on=<9->,draw=orange,line width=1},fill=gray] (0,1) circle(1 and .25);
 \draw[fill=white] circle(3pt);\\
 \fill[gray] (-1,.4) arc(90:0:.6 and .3) arc(-180:0:.4 and .1) arc(180:90:.6 and .3) -- (1,0) to[bend left] (-1,0) -- cycle;
 \fill[gray!40] (-1,-1) to[bend left] (1,-1) -- (1,-.2) arc(-90:-180:.6 and .3) arc(0:-180:.4 and .1) arc(0:-90:.6 and .3) -- cycle;
-\draw (-1,-1) to[bend left] (1,-1);
+\draw[postaction={visible on=<11->,draw=violet,line width=1}] (-1,-1) to[bend left] (1,-1);
 \path[name path=first] (-1,0) to[bend right] (1,0);
-\draw[name path=second] (-1,-.2) arc(-90:90:.6 and .3) (1,-.2) arc(270:90:.6 and .3);
-\draw[dashed,opacity=.5,intersection segments={of={first and second}, sequence={L2}}];
-\draw[intersection segments={of={first and second}, sequence={L1 L3}}];
+\draw[name path=second,postaction={visible on=<11->,draw=orange,line width=1}] (-1,-.2) arc(-90:90:.6 and .3) (1,-.2) arc(270:90:.6 and .3);
+\draw[postaction={visible on=<11->,draw=violet,line width=1},dashed,opacity=.5,visible on=<4->,intersection segments={of={first and second}, sequence={L2}}];
+\draw[postaction={visible on=<11->,draw=violet,line width=1},intersection segments={of={first and second}, sequence={L1 L3}}];
 \draw (-.4,.1) arc (-180:0:.4 and .1);
 \draw[fill=white] circle(3pt);\\
 };
 \end{tikzpicture}
 \end{column}
 \end{columns}
+\onslide<5->{
+\begin{block}{How to detect them on a PL manifold?}
 \begin{columns}[T,onlytextwidth]
 \begin{column}{.65\textwidth}
-\begin{block}{How to detect them on a PL manifold?}
-Given a vertex $v$, the \defterm{star} of $v$ is the union of all simplices containing $v$.\\
-The \defterm{link} of $v$ is the boundary of its star.
+\onslide<6->{Given a vertex $v$, the {\color{blue!40}\defterm{star}} of $v$ is the union of all simplices containing $v$.\\}
+\onslide<7->{The {\color{blue}\defterm{link}} of $v$ is the boundary of its star.}
+\onslide<8->{
 \begin{align*}
-\Link^+(v)&=\left\{x\in\Link(v):f(x)>f(v)\right\}\\
-\Link^-(v)&=\left\{x\in\Link(v):f(x)<f(v)\right\}\\
+{\color{orange}\Link^+}(v)&=\left\{x\in\Link(v):f(x)>f(v)\right\}\\
+{\color{violet}\Link^-}(v)&=\left\{x\in\Link(v):f(x)<f(v)\right\}\\
 \end{align*}
-\end{block}
+}
 \end{column}
-\begin{column}{.35\textwidth}
+\begin{column}{.3\textwidth}
+\begin{tikzpicture}[light edge/.style={gray}]
+\pgfmathsetseed{42}
+\clip (-1.5,-1.3) rectangle(1.5,1.3);
+\foreach \i in {0,...,5} {
+\scoped[shift={(60*\i+30:1)}]\coordinate (\i) at (rnd*360:rand*.2);
+\draw[light edge] (0,0) -- (\i);
+}
+\foreach \i in {0,...,11} {
+\scoped[shift={(30*\i:2)}]\coordinate (o-\i) (rnd*360:rand*.2);
+\tikzmath{
+\j = div(\i, 2); 
+if mod(\i,2) then {{\draw[light edge] (o-\i) --(\j);};}
+else {\k=mod(\j+5,6); {\draw[light edge] (\j) -- (o-\i) -- (\k);};};
+}}
+\draw[alt=<7>{blue,line width=1}{light edge}] (0) -- (1) -- (2) -- (3) -- (4) -- (5) -- cycle;
+\only<8->{
+\foreach \ys/\col in {1/orange,-1/violet}{
+\begin{scope}
+\clip[yscale=\ys] (-2,0) rectangle(2,2);
+\draw[\col,line width=1] (0) -- (1) -- (2) -- (3) -- (4) -- (5) -- cycle;
+\end{scope}
+}}
+\draw[fill=white] circle(1.5pt);
+\scoped[on background layer]\fill[visible on=<6>,blue!20] (0) -- (1) -- (2) -- (3) -- (4) -- (5) -- cycle;
+\end{tikzpicture}
 \end{column}
 \end{columns}
+\end{block}
+}
 \end{frame*}
 
 \subsection*{Significance of critical points}
 \begin{frame*}
 The critical points of $f$ are closely related to the topology of the Reeb graph $\mathcal{R}(f)$.
 \begin{itemize}
-\item \textbf{Maxima} and \textbf{minima}\\
-$\leadsto$ nodes of valence $1$ (leaves).
-\item \textbf{Saddles}\\
-$\leadsto$ nodes of valence $\ge 2$.\\
+\item \textbf{Maxima} and \textbf{minima} $\leadsto$ nodes of valence $1$ (leaves).
+\item \textbf{Saddles} $\leadsto$ nodes of valence $\ge 2$.\\
 \begin{itemize}
 \item \textbf{Join saddles}: multiple components below.\tikzmarknode{prev}{}
 \item \textbf{Split saddles}: multiple components above.\sidenote{}{\draw[-,decorate,decoration={brace,mirror}] ($(mymark)+(.3em,-.3em)$) -- node[right,inner xsep=10pt,align=left] {non-mutually exclusive\\in dimension $\ge 3$} ($(mymark |- prev)+(.3em,1em)$);}
 \end{itemize}
 \end{itemize}
+\begin{center}
+\begin{tikzpicture}
+\draw (-.7,-.1) rectangle (3.1,4.4);
+\begin{scope}[small,transform canvas={scale=.7}]
+\pic{reeb graph={manifold 1,manifold bg}};
+\end{scope}
+\end{tikzpicture}
+\end{center}
 \end{frame*}
