@@ -38,12 +38,12 @@ The \defterm{segmentation map} is the quotient map
 \scoped[shift={(0,\preimageh)}]\draw[visible on=<4>,line width=1pt,fill=preimagecol] coordinate (level set l) (-4pt,-4pt) rectangle (4pt,4pt);
 \end{scope}
 \end{onlyenv}
-\draw[visible on=<5>,line width=1pt,-{To[scale]}] (20,12.5) -- node[above,scale=2] {$\Phi$} (27,12.5);
+\draw[visible on=<5>,line width=1pt,-{To}] (20,12.5) -- node[above,scale=2] {$\Phi$} (27,12.5);
 \alt<2>{\pic{reeb graph={manifold 1,contour,background={\fill[top color=topcolor,bottom color=bottomcolor] (bbox.south west) rectangle (bbox.north east);}}};}
 {\pic{reeb graph={manifold 1,manifold bg,/tikz/only=<4>{
-partial edge={12}{}{absolute up to={\preimageh}{\draw[preimagecol,line width=2pt,dashed,opacity=.5] (.1,0) arc(0:180:1.6 and .5);\draw[preimagecol,line width=2pt] (.1,0) arc (0:-180:1.6 and .5);}},
-partial edge={11}{}{absolute up to={\preimageh}{\draw[preimagecol,line width=2pt,dashed,opacity=.5] (1.5,0) arc(0:180:1.5 and .5);\draw[preimagecol,line width=2pt] (1.5,0) arc (0:-180:1.5 and .5);}},
-partial edge={10}{}{absolute up to={\preimageh}{\draw[preimagecol,line width=2pt,dashed,opacity=.5] (2.0,0) arc(0:180:1.2 and .5);\draw[preimagecol,line width=2pt] (2.0,0) arc(0:-180:1.2 and .5);}},
+partial edge={12}{}{absolute slice={\preimageh}{slice}{\pic[preimagecol,line width=2pt]{slice circle 2=.12cm between (slice-2) and (slice-1)};}},
+partial edge={11}{}{absolute slice={\preimageh}{slice}{\pic[preimagecol,line width=2pt]{slice circle 2=.12cm between (slice-2) and (slice-1)};}},
+partial edge={10}{}{absolute slice={\preimageh}{slice}{\pic[preimagecol,line width=2pt]{slice circle 2=.12cm between (slice-2) and (slice-1)};}},
 },/tikz/only=<5>{every segment={\fillsegmentcmd}}}};}
 \begin{scope}[xshift=8cm]
 \begin{onlyenv}<3->
@@ -111,6 +111,8 @@ partial edge={10}{}{absolute up to={\preimageh}{\fill[preimagecol] coordinate (l
 \subsection{Geometry of critical points}
 \begin{frame*}
 There are three kinds of critical points:
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.55\textwidth}
 \begin{itemize}
 \item \textcolor{gray}{(local)} \textbf{maxima}\\
 $\leadsto$ $\Link^+$ empty;
@@ -119,6 +121,29 @@ $\leadsto$ $\Link^-$ empty;
 \item \textbf{saddles}\\
 $\leadsto$ $\Link^-$ or $\Link^+$ disconnected.
 \end{itemize}
+\end{column}
+\begin{column}{.45\textwidth}
+\begin{tikzpicture}
+\matrix[cells={scale=.5},row sep=7]{
+\draw[fill=gray!40,line cap=round] (-1,1) arc(-180:0:1) -- cycle;
+\draw[fill=gray] (0,1) circle(1 and .25);
+\draw[fill=white] circle(3pt);\\
+\draw[fill=gray!40,line cap=round] (-1,-1) arc(180:0:1) arc(0:-180:1 and .25);
+\draw[dashed,opacity=.5] (-1,-1) arc(180:0:1 and .25);
+\draw[fill=white] circle(3pt);\\
+\fill[gray] (-1,.4) arc(90:0:.6 and .3) arc(-180:0:.4 and .1) arc(180:90:.6 and .3) -- (1,0) to[bend left] (-1,0) -- cycle;
+\fill[gray!40] (-1,-1) to[bend left] (1,-1) -- (1,-.2) arc(-90:-180:.6 and .3) arc(0:-180:.4 and .1) arc(0:-90:.6 and .3) -- cycle;
+\draw (-1,-1) to[bend left] (1,-1);
+\path[name path=first] (-1,0) to[bend right] (1,0);
+\draw[name path=second] (-1,-.2) arc(-90:90:.6 and .3) (1,-.2) arc(270:90:.6 and .3);
+\draw[dashed,opacity=.5,intersection segments={of={first and second}, sequence={L2}}];
+\draw[intersection segments={of={first and second}, sequence={L1 L3}}];
+\draw (-.4,.1) arc (-180:0:.4 and .1);
+\draw[fill=white] circle(3pt);\\
+};
+\end{tikzpicture}
+\end{column}
+\end{columns}
 \begin{columns}[T,onlytextwidth]
 \begin{column}{.65\textwidth}
 \begin{block}{How to detect them on a PL manifold?}
