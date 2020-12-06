@@ -195,58 +195,68 @@ else {\k=mod(\j+5,6); {\draw[light edge] (\j) -- (o-\i) -- (\k);};};
 \end{frame*}
 
 \subsection*{Significance of critical points}
-\begin{frame}[fragile]
+\begin{frame}[fragile]{\secname}{\subsecname}
+\colorlet{maximum color}{orange!50!yellow}
+\colorlet{minimum color}{red}
+\colorlet{saddle up color}{green!90!black}
+\colorlet{saddle down color}{green!50!blue}
 The critical points of $f$ are closely related to the topology of the Reeb graph $\mathcal{R}(f)$.
 \begin{itemize}
-\item<2-> \textbf{Maxima} and \textbf{minima} $\leadsto$ nodes of valence $1$ (leaves).
+\item<2-> \textcolor{maximum color}{\textbf{Maxima}} and \textcolor{minimum color}{\textbf{minima}} $\leadsto$ nodes of valence $1$ (leaves).
 \item<3-> \textbf{Saddles} $\leadsto$ nodes of valence $\ge 2$.\\
 \begin{itemize}
-\item \textbf{Join saddles}: multiple components below.\tikzmarknode{prev}{}
-\item \textbf{Split saddles}: multiple components above.\sidenote{}{\draw[-,decorate,decoration={brace,mirror}] ($(mymark)+(.3em,-.3em)$) -- node[right,inner xsep=10pt,align=left] {non-mutually exclusive\\in dimension $\ge 3$} ($(mymark |- prev)+(.3em,1em)$);}
+\item<4-> \textcolor{saddle down color}{\textbf{Join saddles}}: multiple components below.\tikzmarknode{prev}{}
+\item<4-> \textcolor{saddle up color}{\textbf{Split saddles}}: multiple components above.\sidenote<5>{}{\draw[-,decorate,decoration={brace,mirror}] ($(mymark)+(.3em,-.3em)$) -- node[right,inner xsep=10pt,align=left] {non-mutually exclusive\\in dimension $\ge 3$} ($(mymark |- prev)+(.3em,1em)$);}
 \end{itemize}
 \end{itemize}
 \begin{center}
-%\tikzexternalenable
+\tikzexternalenable
 \begin{tikzpicture}
-\colorlet{maximum color}{orange!50!yellow}
-\colorlet{minimum color}{red}
-
 \path (-.7,-.1) rectangle (3.1,4.5);
 \begin{scope}[small,transform canvas={scale=.7}]
 \pic{reeb graph={
 minimum/.style={
-partial edge={#1}{/reeb graph settings/.cd,outline edge={#1}{\thickness+.5*\linewidth}{fill=black}}{relative up to={.2}{},relative down to={0}{}},
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#1}{\thickness+.5*\linewidth}{fill=minimum color}}{relative up to={.2}{},relative down to={0}{}},
 partial edge={#1}{/reeb graph settings/.cd,outline edge={#1}{\thickness-.5*\linewidth}{fill=gray!50}}{relative up to={.2}{},relative down to={0}{},relative slice={.2}{slice}{\pic[minimum color,line width=1pt,fill=gray]{slice circle 1={.07 cm between (slice-2) and (slice-1)}};}},
 },
 maximum/.style={
-partial edge={#1}{/reeb graph settings/.cd,outline edge={#1}{\thickness+.5*\linewidth}{fill=black}}{relative down to={-.2}{},relative up to={-0.001}{}},
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#1}{\thickness+.5*\linewidth}{fill=maximum color}}{relative down to={-.2}{},relative up to={-0.001}{}},
 partial edge={#1}{/reeb graph settings/.cd,outline edge={#1}{\thickness-.5*\linewidth}{fill=gray!40}}{relative down to={-.2}{},relative up to={-0.001}{}},
 partial edge={#1}{}{relative slice={-.2}{slice}{\pic[opacity=0,fill opacity=1,fill=gray!40]{slice circle 1={.07cm between (slice-2) and (slice-1)}};\pic[maximum color,line width=1pt]{slice circle 2={.07 cm between (slice-2) and (slice-1)}};}},
 },
 saddle up/.style n args={3}{
-partial edge={#1}{/reeb graph settings/.cd,outline edge={#2}{\thickness+.5*\linewidth}{fill=black},outline edge={#3}{\thickness+.5*\linewidth}{fill=black}}{relative down to={-.2}{\coordinate (p);},relative up to={-0.001}{}},
-partial edge={#2}{/reeb graph settings/.cd,outline edge={#2}{\thickness+.5*\linewidth}{fill=black}}{relative up to={.2}{},relative down to={0}{},/utils/exec={\tikzmath{coordinate \p;\p=(p);}},absolute slice={\py}{slice-l}{}},
-partial edge={#3}{/reeb graph settings/.cd,outline edge={#3}{\thickness+.5*\linewidth}{fill=black}}{relative up to={.2}{},relative down to={0}{},/utils/exec={\tikzmath{coordinate \p;\p=(p);}},absolute slice={\py}{slice-r}{}},
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#2}{\thickness+.5*\linewidth}{fill=saddle up color},outline edge={#3}{\thickness+.5*\linewidth}{fill=saddle up color}}{relative down to={-.2}{\coordinate (p);},relative up to={-0.001}{}},
+partial edge={#2}{/reeb graph settings/.cd,outline edge={#2}{\thickness+.5*\linewidth}{fill=saddle up color}}{relative up to={.2}{},relative down to={0}{},/utils/exec={\tikzmath{coordinate \p;\p=(p);}},absolute slice={\py}{slice-l}{}},
+partial edge={#3}{/reeb graph settings/.cd,outline edge={#3}{\thickness+.5*\linewidth}{fill=saddle up color}}{relative up to={.2}{},relative down to={0}{},/utils/exec={\tikzmath{coordinate \p;\p=(p);}},absolute slice={\py}{slice-r}{}},
 partial edge={#1}{/reeb graph settings/.cd,outline edge={#2}{\thickness-.5*\linewidth}{fill=gray!40},outline edge={#3}{\thickness-.5*\linewidth}{fill=gray!40}}{relative down to={-.2}{},relative up to={-0.001}{}},
 partial edge={#2}{/reeb graph settings/.cd,outline edge={#2}{\thickness-.5*\linewidth}{fill=gray!40}}{relative up to={.2}{},relative down to={0}{}},
 partial edge={#3}{/reeb graph settings/.cd,outline edge={#3}{\thickness-.5*\linewidth}{fill=gray!40}}{relative up to={.2}{},relative down to={0}{}},
-partial edge={#2}{}{relative slice={.2}{slice}{\pic[blue,line width=1pt,fill=gray]{slice circle 1={.07 cm between (slice-2) and (slice-1)}};},},
-partial edge={#3}{}{relative slice={.2}{slice}{\pic[blue,line width=1pt,fill=gray]{slice circle 1={.07 cm between (slice-2) and (slice-1)}};}},
-/utils/exec={\pic[opacity=0,fill opacity=1,fill=gray!40]{slice circle 1=.07cm between (slice-r-2) and (slice-l-1)};\pic[blue,line width=1]{slice circle 2=.07cm between (slice-r-2) and (slice-l-1)};},
+partial edge={#2}{}{relative slice={.2}{slice}{\pic[saddle up color,line width=1pt,fill=gray]{slice circle 1={.07 cm between (slice-2) and (slice-1)}};},},
+partial edge={#3}{}{relative slice={.2}{slice}{\pic[saddle up color,line width=1pt,fill=gray]{slice circle 1={.07 cm between (slice-2) and (slice-1)}};}},
+/utils/exec={\pic[opacity=0,fill opacity=1,fill=gray!40]{slice circle 1=.07cm between (slice-r-2) and (slice-l-1)};\pic[saddle up color,line width=1]{slice circle 2=.07cm between (slice-r-2) and (slice-l-1)};},
 },
-%minimum/.list={1,2,5},
-%maximum/.list={12,13},
-%saddle up={9}{12}{11},
+saddle down/.style n args={3}{
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#2}{\thickness+.5*\linewidth}{fill=saddle down color},outline edge={#3}{\thickness+.5*\linewidth}{fill=saddle down color}}{relative up to={.2}{\coordinate (p);},relative down to={0}{}},
+partial edge={#2}{/reeb graph settings/.cd,outline edge={#2}{\thickness+.5*\linewidth}{fill=saddle down color}}{relative down to={-.2}{},relative up to={-0.001}{},/utils/exec={\tikzmath{coordinate \p;\p=(p);}},absolute slice={\py}{slice-l}{}},
+partial edge={#3}{/reeb graph settings/.cd,outline edge={#3}{\thickness+.5*\linewidth}{fill=saddle down color}}{relative down to={-.2}{},relative up to={-0.001}{},/utils/exec={\tikzmath{coordinate \p;\p=(p);}},absolute slice={\py}{slice-r}{}},
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#2}{\thickness-.5*\linewidth}{fill=gray!40},outline edge={#3}{\thickness-.5*\linewidth}{fill=gray!40}}{relative up to={.2}{},relative down to={0}{}},
+partial edge={#2}{/reeb graph settings/.cd,outline edge={#2}{\thickness-.5*\linewidth}{fill=gray!40}}{relative down to={-.2}{},relative up to={-0.001}{}},
+partial edge={#3}{/reeb graph settings/.cd,outline edge={#3}{\thickness-.5*\linewidth}{fill=gray!40}}{relative down to={-.2}{},relative up to={-0.001}{}},
+partial edge={#2}{}{relative slice={-.2}{slice}{\pic[opacity=0,fill opacity=1,fill=gray!40]{slice circle 1={.07cm between (slice-2) and (slice-1)}};\pic[saddle down color,line width=1pt]{slice circle 2={.07 cm between (slice-2) and (slice-1)}};}},
+partial edge={#3}{}{relative slice={-.2}{slice}{\pic[opacity=0,fill opacity=1,fill=gray!40]{slice circle 1={.07cm between (slice-2) and (slice-1)}};\pic[saddle down color,line width=1pt]{slice circle 2={.07 cm between (slice-2) and (slice-1)}};}},
+/utils/exec={\pic[saddle down color,line width=1,fill=gray]{slice circle 1=.07cm between (slice-r-2) and (slice-l-1)};},
+},
 manifold 1,
 /alt=<1>{manifold bg}{contour=black!50,plain background=gray!10},
 /only=<2>{maximum/.list={12,13},minimum/.list={1,2,5}},
-%/only=<3>{saddle up={3}{7}{4},saddle up={6}{8}{10},saddle up={9}{12}{11}},
-every edge={draw=black,opacity=.7,line width=1.5pt},
+/only=<3->{saddle up={3}{7}{4},saddle up={6}{8}{10},saddle up={9}{12}{11},saddle down={3}{1}{2},saddle down={6}{4}{5},saddle down={9}{7}{8},saddle down={13}{11}{10}},
+every edge={draw=black,opacity=.6,line width=1.5pt},
 /only=<1>{every node={\draw[line width=1pt,fill=white] circle(2pt);}},
 /only=<2>{every node but={1,2,6,11,12}{\draw[black!50,line width=1pt,fill=white] circle(2pt);},some nodes={1,2,6}{\draw[line width=1pt,fill=minimum color] circle(2pt);},some nodes={11,12}{\draw[line width=1pt,fill=maximum color] circle(2pt);}},
+/only=<3->{every node but={3,4,5,7,8,9,10}{\draw[black!50,line width=1pt,fill=white] circle(2pt);},some nodes={4,7,9}{\draw[line width=1pt,fill=saddle up color] circle(2pt);},some nodes={3,5,8,10}{\draw[line width=1pt,fill=saddle down color] circle(2pt);}}
 }};
 \end{scope}
 \end{tikzpicture}
-%\tikzexternaldisable
+\tikzexternaldisable
 \end{center}
 \end{frame}

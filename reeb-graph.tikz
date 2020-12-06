@@ -192,8 +192,10 @@ coordinate \p,\q;
 \q=#5;
 \r=veclen(\px-\qx,\py-\qy)/2;
 }
-\path[pic actions] (\p) arc[start angle=#1,end angle=#2,x radius=\r pt,y radius=#3];
-}}
+\draw[pic actions] (\p) arc[start angle=#1,end angle=#2,x radius=\r pt,y radius=#3];
+}},
+pics/slice circle 1/.style args={#1 between #2 and #3}{slice arc=0:360:#1 between #2 and #3},
+pics/slice circle 2/.style args={#1 between #2 and #3}{code={\pic[dashed,opacity=.5]{slice arc=0:180:#1 between #2 and #3};\pic{slice arc=0:-180:#1 between #2 and #3};}},
 }
 
 \begin{tikzpicture}[x={(.25,0)},y={(0,.25)}]
@@ -233,9 +235,9 @@ coordinate \p,\q;
 	%contour,
 	%plain background={gray!50},
 	every edge={preaction={draw=black,line width=2pt},draw=\thiscolor,line width=1pt},
-	partial edge={7}{draw}{relative down to={.3}{\fill[red] circle(2pt);},relative up to={0.9}{\fill[blue] circle(2pt);},relative slice={.5}{aa}{\fill (aa-1) circle(1pt) (aa-2) circle(1pt);\pic[draw]{slice arc=0:180:.2cm between (aa-2) and (aa-1)};}},
+	partial edge={7}{draw}{relative down to={.3}{\fill[red] circle(2pt);},relative up to={0.9}{\fill[blue] circle(2pt);},relative slice={.5}{aa}{\pic[blue]{slice circle 2=.2cm between (aa-2) and (aa-1)};}},
 	every node={\draw[black,line width=1pt,fill=white] circle(2pt);},
-	%debug,
+	debug,
 }};
 %\foreach \c [count=\i] in \colorlist {\getedgecolor[\c]{\i}\fill[\c] (\i,0) circle (.5cm);}
-\end{tikzpicture}
+\end{tikzpicture}}
