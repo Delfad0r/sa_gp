@@ -236,8 +236,9 @@ pics/slice circle 2/.style args={#1 between #2 and #3}{code={\pic[dashed,opacity
 	%plain background={gray!50},
 	every edge={preaction={draw=black,line width=2pt},draw=\thiscolor,line width=1pt},
 	partial edge={7}{draw}{relative down to={.3}{\fill[red] circle(2pt);},relative up to={0.9}{\fill[blue] circle(2pt);},relative slice={.5}{aa}{\pic[blue]{slice circle 2=.2cm between (aa-2) and (aa-1)};}},
+	%outline edge={7}{\thickness+.5*\linewidth}{fill=gray},
 	every node={\draw[black,line width=1pt,fill=white] circle(2pt);},
 	debug,
 }};
 %\foreach \c [count=\i] in \colorlist {\getedgecolor[\c]{\i}\fill[\c] (\i,0) circle (.5cm);}
-\end{tikzpicture}}
+\end{tikzpicture}

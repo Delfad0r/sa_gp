@@ -3,22 +3,23 @@
 \subsection*{Informal description}
 \begin{frame}[fragile]{\secname}{\subsecname}
 \begin{itemize}
-\item Process the vertices of the mesh by \textbf{increasing} value of $f$.
-\item Construct the Reeb graph $\mathcal{R}(f)$ incrementally.
-\item While sweeping upwards, keep:
+\item<1-> Process the vertices of the mesh by \textbf{increasing} value of $f$.
+\item<2-> Construct the Reeb graph $\mathcal{R}(f)$ incrementally.
+\item<3-> While sweeping upwards, keep:
 \begin{itemize}
-\item the \textbf{partial Reeb graph} constructed so far;
-\item the current \sidenotehighlight<1>{\textbf{level set}}{\draw node[anchor=north west,text width=3.7cm] (target) at (.5,-.3) {each connected component corresponds to an open edge of the partial Reeb graph} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $f^{-1}(r)$.
+\item<3-> the \textbf{partial Reeb graph} constructed so far;
+\item<4-> the current \sidenotehighlight<1>{\textbf{level set}}{\draw node[anchor=north west,text width=3.7cm] (target) at (.5,-.3) {each connected component corresponds to an open edge of the partial Reeb graph} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $f^{-1}(r)$.
 \end{itemize}
-\item When processing a vertex, \textbf{update} the level set and the Reeb graph accordingly.
+\item<5-> When processing a vertex, \textbf{update} the level set and the Reeb graph accordingly.
 \end{itemize}
 \begin{center}
-%\tikzexternalenable
+\tikzexternalenable
 \begin{tikzpicture}
+\path (-2,-.1) rectangle (2.7,3.3);
 \begin{scope}[small,transform canvas={scale=.5}]
 \colorlet{topcolor}{gray!40!white!30!red}
 \colorlet{bottomcolor}{gray!40!white!30!blue}
-\def\preimageh{14}
+\alt<2-4>{\def\preimageh{14}}{\def\preimageh{16}}
 \tikzmath{\hpercent=int(\preimageh/25*100);}
 \colorlet{preimagecol}{topcolor!\hpercent!bottomcolor}
 \begin{scope}[shift={(-12,0)}]
@@ -26,18 +27,27 @@
 \path[decorate,decoration={markings,mark=at position 1 with{\arrow{Latex[line width=1pt,fill=topcolor,scale=3]};}}] (0,0) to node[left,scale=2] {$f$} ($(0,25)+(0,13pt)$);
 \fill[top color=topcolor,bottom color=bottomcolor] (-1.5pt,0) rectangle (1.5pt,25);
 \end{scope}
-%\only<1>{\pic{reeb graph={manifold 1,contour,background={\fill[top color=topcolor,bottom color=bottomcolor] (bbox.south west) rectangle (bbox.north east);}}};}
+\only<1>{\pic{reeb graph={manifold 1,contour,background={\fill[top color=topcolor,bottom color=bottomcolor] (bbox.south west) rectangle (bbox.north east);}}};}
 \begin{onlyenv}<2->
-\pic{reeb graph={manifold 1,contour=black!50,plain background=gray!10,
-solid background/.style={/reeb graph settings/.cd,outline edge={#1}{\thickness+.5*\linewidth}{fill=black}},
-partial solid background/.style={partial edge={#1}{/reeb graph settings/.cd,solid background={#1}}{absolute up to={\preimageh}{}}},
-solid segment/.style={outline edge={#1}{\thickness-.5*\linewidth}{fill=gray!40}},
-partial solid segment/.style={partial edge={#1}{/reeb graph settings/.cd,solid segment={#1}}{absolute up to={\preimageh}{},absolute slice={\preimageh}{slice}{\pic[preimagecol,line width=1pt,fill=gray]{slice circle 1={.07 cm between (slice-2) and (slice-1)}};}}},
-solid background/.list={6},partial solid background/.list={7,8,10},solid segment/.list={6},partial solid segment/.list={7,8,10}}};
+\only<2-3>{\colorlet{preimagecol}{black}}
+\pic{reeb graph={manifold 1,contour=black!50,plain background=gray!10}};
+\begin{scope}
+\clip (-5,-5) rectangle (30,\preimageh);
+\pic{reeb graph={manifold 1,manifold bg}};
+\end{scope}
+\pic{reeb graph={manifold 1,
+preimage edge/.style={partial edge={#1}{}{absolute slice={\preimageh}{slice}{\pic[preimagecol,line width=1pt,fill=gray]{slice circle 1={.07cm between (slice-2) and (slice-1)}};}}},
+preimage disk/.style={partial edge={#1}{draw=black,opacity=.6,line width=2pt}{absolute up to={\preimageh}{\fill[black,opacity=.6] circle(2pt);}}},
+/only=<2-4>{preimage edge/.list={7,8,10}},
+/only=<3-4>{preimage disk/.list={7,8,10}},
+/only=<5->{preimage edge=10,preimage disk=10,large segment up={9}{7}{8}{\preimageh}{black}{preimagecol},partial edge={9}{draw=black,opacity=.6,line width=2pt}{absolute up to={\preimageh}{\fill[black,opacity=.6] circle(2pt);}},some edges={7,8}{draw=black,opacity=.6,line width=2pt}},
+/only=<3->{some edges={1,2,3,4,5,6}{draw=black,opacity=.6,line width=2pt},some nodes={1,2,3,4,5,6,7}{\draw[fill=white,line width=1pt] circle(3pt);}},
+/only=<5->{node={8}{\draw[fill=white,line width=1pt] circle(3pt);}},
+}};
 \end{onlyenv}
 \end{scope}
 \end{tikzpicture}
-%\tikzexternaldisable
+\tikzexternaldisable
 \end{center}
 \end{frame}
 \end{document}
