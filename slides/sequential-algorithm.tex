@@ -50,34 +50,55 @@ preimage disk/.style={partial edge={#1}{draw=black,opacity=.6,line width=2pt}{ab
 \tikzexternaldisable
 \end{center}
 \end{frame}
-\end{document}
 
 \subsection*{The preimage graph}
 \begin{frame*}
 The level set $f^{-1}(r)$ can be represented by an abstract \textbf{graph} $G_r$: % if it does not contain any vertices
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.75\textwidth}
 \begin{itemize}
-\item \textbf{nodes} $\leadsto$ edges of the mesh $\mathcal{M}$;
-\item \textbf{edges} $\leadsto$ \sidenotehighlight{triangles}{\draw node[anchor=north west,text width=3.5cm] (target) at (.5,-.3) {a triangle connects its two sides intersecting $f^{-1}(r)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} of $\mathcal{M}$ intersecting $f^{-1}(r)$.
+\item<2-> \textcolor{orange!60!yellow}{\textbf{nodes}} $\leadsto$ edges of the mesh $\mathcal{M}$;
+\item<3-> \textcolor{violet}{\textbf{edges}} $\leadsto$ \setsidenotecolor[violet]\sidenotehighlight<3>{triangles}{\draw node[anchor=north west,text width=3.5cm] (target) at (.5,-.3) {a triangle connects its two sides intersecting $f^{-1}(r)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}\setsidenotecolor{} of $\mathcal{M}$ intersecting $f^{-1}(r)$.
 \end{itemize}
-\begin{block}{Updating $G_r$}
+\end{column}
+\begin{column}{.25\textwidth}
+\begin{tikzpicture}[scale=.7,y={(0,.5)},line join=bevel]
+\pgfmathsetseed{42}
+\foreach \i in {0,...,5} {
+\coordinate (up-\i) at ($(-\i*36:1)+(rnd*360:rnd*.2)$);
+}
+\foreach \i in {0,...,4} {
+\coordinate (down-\i) at ($(-\i*36-18:1)+(rnd*360:rnd*.2)+(0,-2)$);
+}
+\fill[violet,opacity=.12,/visible on=<3->] (up-0) \foreach \i in {1,...,5} {-- (up-\i)} -- (down-4) \foreach \i in {3,2,1,0} {-- (down-\i)} -- cycle;
+\draw[gray] (up-0) \foreach \i in {1,...,5} {-- (up-\i)} (down-0) \foreach \i in {1,...,4} {-- (down-\i)} (up-0) \foreach \i[evaluate=\i as \j using \i+1] in {0,...,4} {-- (down-\i) -- (up-\j)};
+\draw[orange!60!yellow,thick,densely dotted,/visible on=<2->] (up-0) \foreach \i[evaluate=\i as \j using \i+1] in {0,...,4} {-- (down-\i) -- (up-\j)};
+\draw[violet,thick,/visible on=<3->] ($.5*(up-0)+.5*(down-0)$) -- ($.5*(up-1)+.5*(down-0)$) \foreach \i[evaluate=\i as \j using \i+1] in {0,...,4} { -- ($.5*(up-\i)+.5*(down-\i)$) -- ($.5*(up-\j)+.5*(down-\i)$)};
+\foreach \i[evaluate=\i as \j using \i+1] in {0,...,4} {\draw[orange!60!yellow,fill=white,/visible on=<2->] ($.5*(up-\i)+.5*(down-\i)$) circle(1pt) ($.5*(up-\j)+.5*(down-\i)$) circle (1pt);}
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\begin{block}<4->{Updating $G_r$}
 \begin{itemize}
-\item \textbf{Trigger}: \sidenotehighlight{update}{\draw node[anchor=north west] (target) at (.5,-.3) {from $r=f(v)-\epsilon$ to $r=f(v)+\epsilon$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} when processing a vertex $v$\\
-\item \textbf{Action}: process each triangle $\mathcal{T}$ of $\Star(v)$ separately.
+\item<5-> \textbf{Trigger}: \sidenotehighlight<5>{update}{\draw node[anchor=north west] (target) at (.5,-.3) {from $r=f(v)-\epsilon$ to $r=f(v)+\epsilon$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} when processing a vertex $v$\\
+\item<6-> \textbf{Action}: process each triangle $\mathcal{T}$ of $\Star(v)$ separately.
 \begin{enumerate}
-\item $v$ is the lower vertex of $\mathcal{T}$.
-\item $v$ is the middle vertex of $\mathcal{T}$.
-\item $v$ is the upper vertex of $\mathcal{T}$.
+\item<7-> $v$ is the lower vertex of $\mathcal{T}$.
+\item<8-> $v$ is the middle vertex of $\mathcal{T}$.
+\item<9-> $v$ is the upper vertex of $\mathcal{T}$.
 \end{enumerate}
-\item \textbf{Data structure}: the following operations are required;
+\item<10-> \textbf{Data structure}: the following operations are required;
 \begin{itemize}
-\item \texttt{find} the connected component of a node $e$;
-\item \texttt{insert} a new edge between nodes $e_1$, $e_2$;
-\item \texttt{delete} the edge between nodes $e_1$, $e_2$;
+\item<11-> \texttt{find} the connected component of a node $e$;
+\item<12-> \texttt{insert} a new edge between nodes $e_1$, $e_2$;
+\item<13-> \texttt{delete} the edge between nodes $e_1$, $e_2$;
 \end{itemize}
-$\leadsto$ \sidenotehighlight{offline}{} dynamic connectivity problem $\leadsto$ \sidenotehighlight{\textbf{ST-trees}}{\draw node[anchor=north east] (target) at (-.5,-.3) {support all the operations in $O(\log m)$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);}
+\onslide<14->{
+$\leadsto$ \sidenotehighlight<14->{offline}{} dynamic connectivity problem \onslide<15->{$\leadsto$ \sidenotehighlight<15>{\textbf{ST-trees}}{\draw node[anchor=north east] (target) at (-.5,-.3) {support all the operations in $O(\log m)$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);}}}
 \end{itemize}
 \end{block}
 \end{frame*}
+\end{document}
 
 \subsection*{The augmented Reeb graph}
 \begin{frame*}

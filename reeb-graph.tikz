@@ -229,8 +229,8 @@ pics/slice circle 2/.style args={#1 between #2 and #3}{code={\pic[dashed,opacity
 	add edge={(9) to[out=10,in=190] (10)},
 	add edge={(9) to[out=170,in=-90] (11)},
 	add edge={(10) to[out=90,in=-45] (12)},
-	%contour,
-	%plain background={gray!50},
+	contour,
+	plain background={gray!50},
 	%every segment={\fill[\thiscolor!40] (bbox.south west) rectangle (bbox.north east);},
 	%contour,
 	%plain background={gray!50},
@@ -241,4 +241,4 @@ pics/slice circle 2/.style args={#1 between #2 and #3}{code={\pic[dashed,opacity
 	debug,
 }};
 %\foreach \c [count=\i] in \colorlist {\getedgecolor[\c]{\i}\fill[\c] (\i,0) circle (.5cm);}
-\end{tikzpicture}
+\end{tikzpicture}e}
