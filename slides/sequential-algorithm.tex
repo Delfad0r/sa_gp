@@ -52,7 +52,7 @@ preimage disk/.style={partial edge={#1}{draw=black,opacity=.6,line width=2pt}{ab
 \end{frame}
 
 \subsection*{The preimage graph}
-\begin{frame*}
+\begin{frame}[fragile]{\secname}{\subsecname}
 The level set $f^{-1}(r)$ can be represented by an abstract \textbf{graph} $G_r$: % if it does not contain any vertices
 \begin{columns}[T,onlytextwidth]
 \begin{column}{.75\textwidth}
@@ -80,24 +80,53 @@ The level set $f^{-1}(r)$ can be represented by an abstract \textbf{graph} $G_r$
 \end{columns}
 \begin{block}<4->{Updating $G_r$}
 \begin{itemize}
-\item<5-> \textbf{Trigger}: \sidenotehighlight<5>{update}{\draw node[anchor=north west] (target) at (.5,-.3) {from $r=f(v)-\epsilon$ to $r=f(v)+\epsilon$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} when processing a vertex $v$\\
-\item<6-> \textbf{Action}: process each triangle $\mathcal{T}$ of $\Star(v)$ separately.
+\item<5-> \textbf{Trigger}: \sidenotehighlight<5>{update}{\draw node[anchor=north west] (target) at (.5,-.3) {from $r=f(v)-\epsilon$ to $r=f(v)+\epsilon$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} when processing a vertex \textcolor{blue}{$v$}.\\
+\item<6->\textbf{Action}: process each triangle \textcolor{violet!50}{$\mathcal{T}$} of $\Star(\textcolor{blue}{v})$ separately.
+\vspace{-.35cm}
+\begin{multicols}{2}
 \begin{enumerate}
-\item<7-> $v$ is the lower vertex of $\mathcal{T}$.
-\item<8-> $v$ is the middle vertex of $\mathcal{T}$.
-\item<9-> $v$ is the upper vertex of $\mathcal{T}$.
+\item<7-> \textcolor{blue}{$v$} is the lower vertex of \textcolor{violet!50}{$\mathcal{T}$}.
+\item<11-> \textcolor{blue}{$v$} is the middle vertex of \textcolor{violet!50}{$\mathcal{T}$}.
+\item<15-> \textcolor{blue}{$v$} is the upper vertex of \textcolor{violet!50}{$\mathcal{T}$}.
 \end{enumerate}
-\item<10-> \textbf{Data structure}: the following operations are required;
+\columnbreak
+\begin{tikzpicture}[scale=.7,
+pics/triangle/.style n args={6}{code={
+\tikzmath{\j=int(#1+1);}
+\scoped[on background layer]\fill[violet,opacity=.12,/visible on=<#1-\j>] (#2) -- (#3) -- (#4) -- cycle;
+\alt<-#1>{\draw[violet,thick] #5;}{\draw[violet,thick] #6;}
+}}]
+\pgfmathsetseed{42}
+\coordinate (0) at (0,0);
+\foreach \i in {1,...,6} {\coordinate (\i) at ($(60*\i-30:.9)+(rnd*360:rnd*.2)$);}
+\foreach \i[evaluate=\i as \j using int(\i+1)] in {0,...,5} \foreach \k in {\j,...,6} {
+\coordinate (\i\k) at ($.5*(\i)+.5*(\k)$);
+}
+\draw[gray] (1) -- (2) -- (3) -- (4) -- (5) -- (6) -- (1) \foreach \i in {1,...,6} {(0) -- (\i)};
+\scoped[shift=(16),draw=violet,thick]\draw (0,0) -- (rand*30:.3);
+\scoped[shift=(34),draw=violet,thick]\draw (0,0) -- (180+rand*30:.3);
+\pic{triangle={7}{0}{4}{5}{(04) -- (05)}{}};
+\pic{triangle={9}{0}{5}{6}{(05) -- (06)}{}};
+\pic{triangle={11}{0}{3}{4}{(34) -- (04)}{(34) -- (03)}};
+\pic{triangle={13}{0}{1}{6}{(16) -- (06)}{(16) -- (01)}};
+\pic{triangle={15}{0}{2}{3}{}{(02) -- (03)}};
+\pic{triangle={17}{0}{1}{2}{}{(01) -- (02)}};
+\foreach \i in {01,02,03,04,05,06,12,23,34,45,56,16} {\draw[orange!60!yellow,fill=white] (\i) circle(1pt);}
+\fill[blue] (0) circle(1.5pt);
+\end{tikzpicture}
+\end{multicols}
+\vspace{-.4cm}
+\item<19-> \textbf{Data structure}: the following operations are required;
 \begin{itemize}
-\item<11-> \texttt{find} the connected component of a node $e$;
-\item<12-> \texttt{insert} a new edge between nodes $e_1$, $e_2$;
-\item<13-> \texttt{delete} the edge between nodes $e_1$, $e_2$;
+\item<20-> \texttt{find} the connected component of a node $e$;
+\item<21-> \texttt{insert} a new edge between nodes $e_1$, $e_2$;
+\item<22-> \texttt{delete} the edge between nodes $e_1$, $e_2$;
 \end{itemize}
-\onslide<14->{
-$\leadsto$ \sidenotehighlight<14->{offline}{} dynamic connectivity problem \onslide<15->{$\leadsto$ \sidenotehighlight<15>{\textbf{ST-trees}}{\draw node[anchor=north east] (target) at (-.5,-.3) {support all the operations in $O(\log m)$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);}}}
+\onslide<23->{
+$\leadsto$ \sidenotehighlight<23->{offline}{} dynamic connectivity problem \onslide<24->{$\leadsto$ \sidenotehighlight<24>{\textbf{ST-trees}}{\draw node[anchor=north east] (target) at (-.5,-.3) {support all the operations in $O(\log m)$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);}}}
 \end{itemize}
 \end{block}
-\end{frame*}
+\end{frame}
 \end{document}
 
 \subsection*{The augmented Reeb graph}
