@@ -3,15 +3,26 @@
 \documentclass[10pt]{beamer}
 \usepackage{mystyle}
 \usepackage{multicol}
-\includeonly{sequential-algorithm}
+\usepackage{xpatch}
 \def\quality{20}
+
+\makeatletter
+
+
+\xpatchcmd{\@iiiminipage}{%
+  \let\@listdepth\@mplistdepth \@mplistdepth\z@
+}{%
+  \let\@listdepth\@mplistdepth
+  \@mplistdepth\@enumdepth  % use the current depth (stored in \@enumdepth
+}{\typeout{Patching minipage succeeded}}{\typeout{Patching failed}}% End of patching
+
+\makeatother
 
 %\tikzset{external/force remake}
 
 \begin{document}
-\include{reeb-graph}
+
 \include{sequential-algorithm}
-\include{parallel-algorithm}
-\include{results}
+
 
 \end{document}

@@ -250,6 +250,7 @@ relative slice/.code n args={3}{
 \path[name path=first] (bbox.south west|--slice) -- (bbox.south east|--slice);
 \path[name intersections={of=first and second,sort by=first,name={#2}}];
 \expandafter\gdef\expandafter\codeToExecuteAfterEdge\expandafter{\codeToExecuteAfterEdge #3}
+\pgfkeysalso{/reeb graph settings/partial edge settings/.cd}
 },
 absolute slice/.code n args={3}{
 \coordinate (-slice) at (0,#1);
@@ -257,14 +258,15 @@ absolute slice/.code n args={3}{
 \path[name path=first] (bbox.south west|--slice) -- (bbox.south east|--slice);
 \path[name intersections={of=first and second,sort by=first,name={#2}}];
 \expandafter\gdef\expandafter\codeToExecuteAfterEdge\expandafter{\codeToExecuteAfterEdge #3}
+\pgfkeysalso{/reeb graph settings/partial edge settings/.cd}
 },
 }
 \pgfkeys{
 /reeb graph settings/partial segment settings/.cd,
 relative up to/.style={/reeb graph settings/partial edge settings/.cd,relative up to={#1}{}},
-absolute up to/.style={/reeb graph settings/partial edge settings/absolute up to={#1}{}},
+absolute up to/.style={/reeb graph settings/partial edge settings/.cd,absolute up to={#1}{}},
 relative down to/.style={/reeb graph settings/partial edge settings/.cd,relative down to={#1}{}},
-absolute down to/.style={/reeb graph settings/partial edge settings/absolute down to={#1}{}},
+absolute down to/.style={/reeb graph settings/partial edge settings/.cd,absolute down to={#1}{}},
 }
 
 \tikzset{

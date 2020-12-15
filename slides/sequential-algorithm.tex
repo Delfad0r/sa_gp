@@ -62,6 +62,7 @@ The level set $f^{-1}(r)$ can be represented by an abstract \textbf{graph} $G_r$
 \end{itemize}
 \end{column}
 \begin{column}{.25\textwidth}
+\tikzexternalenable
 \begin{tikzpicture}[scale=.7,y={(0,.5)},line join=bevel]
 \pgfmathsetseed{42}
 \foreach \i in {0,...,5} {
@@ -76,6 +77,7 @@ The level set $f^{-1}(r)$ can be represented by an abstract \textbf{graph} $G_r$
 \draw[violet,thick,/visible on=<3->] ($.5*(up-0)+.5*(down-0)$) -- ($.5*(up-1)+.5*(down-0)$) \foreach \i[evaluate=\i as \j using \i+1] in {0,...,4} { -- ($.5*(up-\i)+.5*(down-\i)$) -- ($.5*(up-\j)+.5*(down-\i)$)};
 \foreach \i[evaluate=\i as \j using \i+1] in {0,...,4} {\draw[orange!60!yellow,fill=white,/visible on=<2->] ($.5*(up-\i)+.5*(down-\i)$) circle(1pt) ($.5*(up-\j)+.5*(down-\i)$) circle (1pt);}
 \end{tikzpicture}
+\tikzexternaldisable
 \end{column}
 \end{columns}
 \begin{block}<4->{Updating $G_r$}
@@ -90,6 +92,7 @@ The level set $f^{-1}(r)$ can be represented by an abstract \textbf{graph} $G_r$
 \item<15-> \textcolor{blue}{$v$} is the upper vertex of \textcolor{violet!50}{$\mathcal{T}$}.
 \end{enumerate}
 \columnbreak
+\tikzexternalenable
 \begin{tikzpicture}[scale=.7,
 pics/triangle/.style n args={6}{code={
 \tikzmath{\j=int(#1+1);}
@@ -114,6 +117,7 @@ pics/triangle/.style n args={6}{code={
 \foreach \i in {01,02,03,04,05,06,12,23,34,45,56,16} {\draw[orange!60!yellow,fill=white] (\i) circle(1pt);}
 \fill[blue] (0) circle(1.5pt);
 \end{tikzpicture}
+\tikzexternaldisable
 \end{multicols}
 \vspace{-.4cm}
 \item<19-> \textbf{Data structure}: the following operations are required;
@@ -127,31 +131,128 @@ $\leadsto$ \sidenotehighlight<23->{offline}{} dynamic connectivity problem \onsl
 \end{itemize}
 \end{block}
 \end{frame}
-\end{document}
 
 \subsection*{The augmented Reeb graph}
-\begin{frame*}
-The partial augmented Reeb graph is represented by a pair $(\sidenotehighlight{\mathcal{R}}{\draw node[anchor=south east,align=right] (target) at (-.5,.3) {Reeb graph constructed so far;\\has one open edge for each component of $G_r$} (mymark) to[out=90,in=-10] ([yshift=-7pt]target.north east);},\sidenotehighlight{\Phi}{\draw node[anchor=north east,align=right] (target) at (-.5,-.3) {partial segmentation map;\\maps each vertex of the mesh to a node or an edge of $\mathcal{R}$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);})$.
-\begin{block}{Updating $(\mathcal{R},\Phi)$}
+\begin{frame}[fragile]{\secname}{\subsecname}
+The partial augmented Reeb graph is represented by a pair \setsidenotecolor[gray] $(\sidenotehighlight<2>{\mathcal{R}}{\draw node[anchor=south east,align=right] (target) at (0,.3) {Reeb graph constructed so far;\\has one \textcolor{red}{open edge} for each component of \textcolor{violet}{$G_r$}} (mymark) to[out=40,in=-10] ([yshift=-7pt]target.north east);},\sidenotehighlight<3>{\Phi}{\draw node[anchor=north east,align=right] (target) at (-.5,-.3) {partial segmentation map;\\maps each vertex of the mesh to a node or an edge of $\mathcal{R}$} (mymark) to[out=-90,in=10] ([yshift=-7pt]target.north east);})$.\setsidenotecolor{}
+\begin{overlayarea}{\textwidth}{.77\textheight}
+\begin{onlyenv}<1-3>
+\vspace{.6cm}
+\begin{center}
+\tikzexternalenable
+\begin{tikzpicture}
+\begin{scope}[small]
+\def\preimageh{14}
+\pic{reeb graph={manifold 1,/only=<1-3>{contour=black!50,plain background=gray!10},
+/utils/exec={\begin{scope}\clip (-5,-1) rectangle (19,\preimageh);},
+contour,
+/only=<1-2>{plain background=gray!40},
+/utils/exec={\end{scope}},
+preimage disk/.style={partial edge={#1}{}{absolute slice={\preimageh}{slice}{\getedgecolor{#1}\pic[/alt=<1-2>{violet,line width=1.5pt,fill=gray}{black,line width=1pt,fill=\thiscolor!80!black}]{slice circle 1={.07cm between (slice-2) and (slice-1)}};}}},
+preimage edge/.style={partial edge={#1}{/only=<1-2>{/alt=<1>{draw=black,opacity=.6}{draw=red},line width=2pt,densely dashed},/only=<3>{preaction={draw=black,line width=3pt,densely dashed},/utils/exec={\getedgecolor{#1}},draw=\thiscolor,line width=2pt,densely dashed}}{absolute up to={\preimageh}{}}},
+/only=<3>{some segments={1,2,3,4,5,6}{\fillsegmentcmd},partial segment={7}{\fillsegmentcmd}{relative down to={0},absolute up to={\preimageh}},partial segment={8}{\fillsegmentcmd}{relative down to={0},absolute up to={\preimageh}},partial segment={10}{\fillsegmentcmd}{relative down to={0},absolute up to={\preimageh}}},
+/only=<1-3>{preimage disk/.list={7,8,10},
+preimage edge/.list={7,8,10}},
+/only=<1-2>{some edges={1,2,3,4,5,6}{draw=black,opacity=.6,line width=2pt}},
+/only=<3>{some edges={1,2,3,4,5,6}{preaction={draw=black,line width=3pt},draw=\thiscolor,line width=2pt}},
+some nodes={1,2,3,4,5,6,7}{\draw[fill=white,line width=1pt] circle(3pt);},
+}};
+\end{scope}
+\end{tikzpicture}
+\tikzexternaldisable
+\end{center}
+\end{onlyenv}
+\begin{onlyenv}<4->
+\vspace{-.2cm}
+\begin{block}<4->{Updating $(\mathcal{R},\Phi)$}
 When processing a vertex $v$:
 \begin{enumerate}
-\item \textbf{Let} $\sidenotehighlight{\operatorname{Lc}}{\draw node[anchor=north west] (target) at (.5,-.3) {lower components} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}=\left\{G_{f(v)-\epsilon}\texttt{.find}([vv']):v'\in\Link^-(v)\right\}$.
-\item \textbf{Let} $\sidenotehighlight{\operatorname{Uc}}{\draw node[anchor=north west] (target) at (.5,-.3) {upper components} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}=\left\{G_{f(v)+\epsilon}\texttt{.find}([vv']):v'\in\Link^+(v)\right\}$.
-\item \textbf{If} $|\operatorname{Lc}|=|\operatorname{Uc}|=1$ \textbf{then}:
+\item<5-> \textbf{Let} $\setsidenotecolor[green]\sidenotehighlight<5->{\operatorname{Lc}}{\draw[/visible on=<5>] node[anchor=north west] (target) at (.5,-.3) {lower components} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}=\left\{G_{f(v)-\epsilon}\texttt{.find}([vv']):v'\in\Link^-(v)\right\}$.
+\item<6-> \textbf{Let} $\setsidenotecolor[orange]\sidenotehighlight<6->{\operatorname{Uc}}{\draw[/visible on=<6>] node[anchor=north west] (target) at (.5,-.3) {upper components} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}=\left\{G_{f(v)+\epsilon}\texttt{.find}([vv']):v'\in\Link^+(v)\right\}$.
+\item<7-> \strut\begin{minipage}[t]{.6\textwidth}
+\textbf{If} $|\setsidenotecolor[green]\sidenotehighlight<7->{\operatorname{Lc}}{}|=|\setsidenotecolor[orange]\sidenotehighlight<7->{\operatorname{Uc}}{}|=1$ \textbf{then}:\setsidenotecolor{}
 \begin{itemize}
-\item $\mathcal{R}$ is unchanged;
-\item $\Phi(v)=\text{the open edge associated to the lower component}$.
+\item<8-> $\mathcal{R}$ is unchanged;
+\item<9-> $\Phi(v)=$ the \textcolor{red}{open edge} associated to the lower component.
 \end{itemize}
-\item \textbf{Otherwise}:
+\end{minipage}
+\begin{minipage}[t]{.3\textwidth}
+\begin{center}
+\tikzexternalenable
+\begin{tikzpicture}[x={(.25,0)},y={(0,.25)},baseline={(0,1.5)}]
+\clip (-4,1.2) rectangle (4,5.8);
+\pic{reeb graph={
+	line width=1pt,
+	nodes={
+	down={(0,0)},
+	up={(2,7)}
+	},
+	add edge={(1) to[out=170,in=190] (2)},
+	contour=black!50,
+	plain background=gray!10,
+    /alt=<7>{small segment up={1}{.37}{black}{green}}{small segment up={1}{.63}{black}{orange}},
+	partial edge={1}{}{relative slice={.37}{slicel}{\pic[green,line width=1pt,opacity=.5,/visible on=<8->]{slice circle 1={.07cm between (slicel-2) and (slicel-1)}};},relative slice={.67}{sliceu}{\pic[orange,line width=1pt,opacity=.5,/visible on=<7>]{slice circle 1={.07cm between (sliceu-2) and (sliceu-1)}};}},
+	partial edge={1}{draw=red,line width=1pt,densely dotted}{/alt=<7>{relative up to={.37}{}}{relative up to={.63}{}}},
+	/utils/exec={\fill[/alt=<7-8>{black}{red}] (-2,3.5) circle(1.5pt);},
+}};
+\end{tikzpicture}
+\tikzexternaldisable
+\end{center}\end{minipage}
+\item<10-> \strut\begin{minipage}[t]{.6\textwidth}\textbf{Otherwise}:
 \begin{itemize}
-\item create a new vertex $w$ in $\mathcal{R}$;
-\item all the open edges associated to the lower components end at $w$;
-\item open a new edge in $\mathcal{R}$ starting at $w$ for each upper component.
-\item $\Phi(v)=w$.
+\item<11-> create a new node $\textcolor{blue}{w}$ in $\mathcal{R}$;
+\item<12-> all the {\only<12>{\color{red}}open edges} associated to the lower components end at $\textcolor{blue}{w}$;
+\item<13-> open a \textcolor{red}{new edge} in $\mathcal{R}$ starting at $\textcolor{blue}{w}$ for each upper component.
+\item<14-> $\Phi(v)=\textcolor{blue}{w}$.
 \end{itemize}
+\end{minipage}
+\begin{minipage}[t]{.3\textwidth}
+\begin{center}
+\only<10->{
+\tikzexternalenable
+\begin{tikzpicture}[x={(.25,0)},y={(0,.25)},baseline={(0,3.6)}]
+\alt<-11>{\def\preimageh{7.4}}{\def\preimageh{8.8}}
+\clip (-1.5,5.5) rectangle (9,13);
+\pic{reeb graph={
+	line width=1pt,
+	nodes={
+		up={(0,0)},
+		up={(11,2)},
+		up={(6,5)},
+		down={(3,8)},
+		up={(11,10)},
+		up={(16,6)},
+		down={(9,13)},
+		up={(5,15)},
+	},
+	add edge={(1) to[out=90,in=190] (3)},
+	add edge={(2) to[out=90,in=-10] (3)},
+	add edge={(3) to[out=90,in=-90] (4)},
+	add edge={(4) to[out=10,in=190] (5)},
+	add edge={(4) to[out=170,in=190] (8)},
+	contour=black!50,
+	plain background=gray!10,
+	/utils/exec={\begin{scope}\clip (-5,-5) rectangle (10,\preimageh);},
+	manifold bg,
+	/utils/exec={\end{scope}},
+	partial edge={4}{}{absolute slice={7.4}{slice-r}{}},
+	partial edge={5}{}{absolute slice={7.4}{slice-l}{\pic[green,line width=1pt,/alt=<-11>{fill=gray}{opacity=.5}]{slice circle 1=.07cm between (slice-r-2) and (slice-l-1)};}},
+    partial edge={4}{}{absolute slice={8.8}{slice}{\pic[orange,line width=1pt,/alt=<-11>{opacity=.5}{fill=gray}]{slice circle 1=.07cm between (slice-2) and (slice-1)};}},
+    partial edge={5}{}{absolute slice={8.8}{slice}{\pic[orange,line width=1pt,/alt=<-11>{opacity=.5}{fill=gray}]{slice circle 1=.07cm between (slice-2) and (slice-1)};}},
+    /only=<10-11>{partial edge={3}{draw=red,line width=1pt,densely dotted}{absolute up to={\preimageh}{}}},
+    /only=<12->{edge={3}{/alt=<12>{draw=red}{draw=black,opacity=.6},line width=1pt}},
+    /only=<13->{partial edge={4}{draw=red,line width=1pt,densely dotted}{absolute up to={\preimageh}{}},partial edge={5}{draw=red,line width=1pt,densely dotted}{absolute up to={\preimageh}{}}},
+	node={4}{\path[/alt=<10>{fill=black}{draw=blue,fill=white,line width=1pt}] circle(1.5pt);},
+}};
+\end{tikzpicture}
+\tikzexternaldisable
+}
+\end{center}\end{minipage}
 \end{enumerate}
 \end{block}
-\end{frame*}
+\end{onlyenv}
+\end{overlayarea}
+\end{frame}
 
 \subsection*{Full implementation}
 \begin{frame*}
