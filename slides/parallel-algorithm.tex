@@ -1,40 +1,113 @@
 \section{Parallel algorithm}
 
 \subsection*{Core ideas}
-\begin{frame*}
+\begin{frame}[fragile]{\secname}{\subsecname}
 \begin{itemize}
 \item[{\tikz\node[inner sep=0,opacity=.5]{\usebeamertemplate**{itemize item}};}] \textcolor{gray}{\textbf{Sequential}: single procedure sweeping all the vertices sequentially.}
-\item \textbf{Parallel}: multiple procedures (local growths) running simultaneously.
+\item<2-> \textbf{Parallel}: multiple procedures (local growths) running simultaneously.
 \begin{itemize}
-\item A local growth is started at every minimum.
-\item Each local growth spreads independently with an ordered BFS.
-\item Each local growth updates its own preimage graph $G_r$.
-\item \textbf{Join saddles}: wait until all the involved local growths have reached the saddle, then join them.
-\item \textbf{Split saddles}: the new open edges in $\mathcal{R}(f)$ are handled by the same local growth.
+\item<3-> A local growth is started at every minimum.
+\item<4-> Each local growth spreads independently with an ordered BFS.
+\item<5-> Each local growth updates its own preimage graph $G_r$.
+\item<6-> \textbf{Join saddles}: wait until all the involved local growths have reached the saddle, then join them.
+\item<9-11> \textbf{Split saddles}: the new open edges in $\mathcal{R}(f)$ are handled by the same local growth.
 \end{itemize}
 \end{itemize}
-\end{frame*}
+\begin{center}
+\tikzexternalenable
+\begin{tikzpicture}
+\path (-.5,-.1) rectangle (2.5,3.3);
+\begin{scope}[small,transform canvas={scale=.5}]
+\pic{reeb graph={
+small local growth/.style n args={3}{
+partial segment={#1}{\fill[#3!40] (bbox.south west) rectangle (bbox.north east);}{relative down to=0,relative up to={#2}},
+partial edge={#1}{draw=#3,line width=2pt,preaction={draw=black,line width=3pt}}{relative up to={#2}{},relative slice={#2}{slice}{\pic[/alt=<-4>{black,line width=1pt}{#3,line width=1.5pt},fill=#3!50!white!70!black]{slice circle 1=.07cm between (slice-2) and (slice-1)};}}
+},
+small absolute local growth/.style n args={3}{
+partial segment={#1}{\fill[#3!40] (bbox.south west) rectangle (bbox.north east);}{relative down to=0,absolute up to={#2}},
+partial edge={#1}{draw=#3,line width=2pt,preaction={draw=black,line width=3pt}}{absolute up to={#2}{},absolute slice={#2}{slice}{\pic[/alt=<-4>{black,line width=1pt}{#3,line width=1.5pt},fill=#3!50!white!70!black]{slice circle 1=.07cm between (slice-2) and (slice-1)};}}
+},
+/only=<2->{manifold 1,manifold bg},
+/only=<4-5>{
+small local growth={1}{.33}{red},
+small local growth={2}{.5}{cyan},
+small local growth={5}{.25}{pink},
+},
+/only=<6>{
+small local growth={1}{.66}{red},
+small local growth={2}{-.001}{cyan},
+small local growth={5}{.5}{pink},
+},
+/only=<7>{
+small local growth={1}{-.001}{red},
+small local growth={2}{-.001}{cyan},
+small local growth={5}{.75}{pink},
+},
+/only=<8>{
+partial segment={3}{\fill[red!40] (bbox.south west) rectangle (bbox.north east);}{relative down to=0,absolute up to=5.8},
+partial edge={1}{}{absolute slice={5.8}{slice-l}{}},
+partial edge={2}{}{absolute slice={5.8}{slice-r}{}},
+partial edge={3}{draw=red,line width=2pt,preaction={draw=black,line width=3pt}}{absolute up to={5.8}{\pic[red,line width=1.5,fill=red!50!white!70!black]{slice circle 1=.07cm between (slice-r-2) and (slice-l-1)};}},
+small local growth={5}{-.001}{pink},
+},
+/only=<9->{segment={3}{\fill[red!40] (bbox.south west) rectangle (bbox.north east);}},
+/only=<9>{
+small local growth={7}{0}{red},
+small local growth={4}{0}{red},
+small local growth={5}{-.001}{pink},
+},
+/only=<10>{
+small absolute local growth={7}{9}{red},
+small absolute local growth={4}{9}{red},
+small local growth={5}{-.001}{pink},
+},
+/only=<11>{
+small absolute local growth={7}{10}{red},
+small absolute local growth={4}{10}{red},
+small local growth={5}{-.001}{pink},
+},
+/only=<8->{segment={1}{\fill[red!40] (bbox.south west) rectangle (bbox.north east);},edge={1}{draw=red,line width=2pt,preaction={draw=black,line width=3pt}},segment={2}{\fill[cyan!40] (bbox.south west) rectangle (bbox.north east);},edge={2}{draw=cyan,line width=2pt,preaction={draw=black,line width=3pt}}},
+/only=<9->{edge={3}{draw=red,line width=2pt,preaction={draw=black,line width=3pt}}},
+/only=<3->{
+node={1}{\draw[black,line width=1pt,fill=red] circle(3pt);},
+node={2}{\draw[black,line width=1pt,fill=cyan] circle(3pt);},
+node={6}{\draw[black,line width=1pt,fill=pink] circle(3pt);}},
+/only=<6->{node={3}{\draw[black,line width=1pt,fill=white] circle(3pt);}},
+/only=<8->{node={5}{\draw[black,line width=1pt,fill=white] circle(3pt);}},
+/only=<9->{node={4}{\draw[black,line width=1pt,fill=white] circle(3pt);}},
+}};
+\end{scope}
+\end{tikzpicture}
+\tikzexternaldisable
+\end{center}
+\end{frame}
 
 \subsection*{Local growths}
 \begin{frame*}
 \begin{block}{Data structures}
 Each local growth keeps:
 \begin{itemize}
-\item a \sidenotehighlight<1>{\textbf{Fibonacci heap}}{\draw node[anchor=north west] (target) at (.5,-.3) {can be merged in $O(1)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $\theta$ to store candidates for the \sidenotehighlight<1>{ordered}{\draw node[anchor=south east,text width=2.5cm,align=right] (target) at (-.5,.3) {candidates are sorted by $f$ value} (mymark) to [out=90,in=-10] ([yshift=-7pt]target.north east);} BFS;
-\item an \sidenotehighlight<1>{\textbf{ST-tree}}{\draw node[anchor=north west] (target) at (.5,-.3) {can be merged in $O(1)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $G_r$ to store the preimage graph. 
+\item<2-> a \sidenotehighlight<4>{\textbf{Fibonacci heap}}{\draw node[anchor=north west] (target) at (.5,-.3) {can be merged in $O(1)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $\theta$ to store candidates for the \sidenotehighlight<3>{ordered}{\draw node[anchor=south east,text width=2.5cm,align=right] (target) at (-.5,.3) {candidates are sorted by $f$ value} (mymark) to [out=90,in=-10] ([yshift=-7pt]target.north east);} BFS;
+\item<5-> an \sidenotehighlight<6>{\textbf{ST-tree}}{\draw node[anchor=north west] (target) at (.5,-.3) {can be merged in $O(1)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $G_r$ to store the preimage graph. 
 \end{itemize}
 \end{block}
-\begin{block}{Join saddles}
+\vspace{-.3cm}
+\begin{block}<7->{Join saddles}
 What if a saddle joins components from different local growths?
 \begin{itemize}
-\item \sidenotehighlight<1>{\textbf{Detection}}{\draw node[anchor=north west,text width=6cm] (target) at (.5,-.3cm-1em) {concretely, update an atomic counter $\text{visitedLower}[v]$ and check whether $\text{visitedLower}[v]=|\Link^-(v)|$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}: before processing a vertex $v$, check whether all the vertices in $\Link^-(v)$ have already been visited.
-\item \textbf{Stopping}: if not, terminate this local growth.
-\item \textbf{Processing}: otherwise, this local growth is in charge of proceeding;
+\item<8-> \sidenotehighlight<9>{\textbf{Detection}}{\draw node[anchor=north west,text width=6cm] (target) at (.5,-.3cm-1em) {concretely, update an atomic counter $\text{visitedLower}[v]$ and check whether $\text{visitedLower}[v]=|\Link^-(v)|$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}: before processing a vertex $v$, check whether all the vertices in $\Link^-(v)$ have already been visited.
+\end{itemize}
+\vspace{-.25cm}
+\begin{minipage}[t]{.65\textwidth}
 \begin{itemize}
-\item join the priority queues ($\theta$) and the preimage graphs ($G_r$) of all local growths terminated at $v$;
-\item process $v$ as usual.
+\item<10-> \textbf{Stopping}: if not, terminate this local growth.
+\item<11-> \textbf{Processing}: otherwise, this local growth is in charge of proceeding;
+\begin{itemize}
+\item<12-> join the priority queues ($\theta$) and the preimage graphs ($G_r$) of all local growths terminated at $v$;
+\item<13-> process $v$ as usual.
 \end{itemize}
 \end{itemize}
+\end{minipage}
 \end{block}
 \end{frame*}
 

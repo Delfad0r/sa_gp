@@ -128,10 +128,10 @@ There are three kinds of critical points:
 \matrix[cells={scale=.5},row sep=7, row 1/.style={/visible on=<2->},row 2/.style={/visible on=<3->},row 3/.style={/visible on=<4->}]{
 \draw[fill=gray!40] (-1,-1) arc(180:0:1) arc(0:-180:1 and .25);
 \draw[postaction={/visible on=<10->,draw=violet,line width=1},dashed,opacity=.5,/visible on=<2->] (-1,-1) arc(180:0:1 and .25);
-\draw[/visible on=<10->,violet,line width=1] (-1,-1) arc(-180:0:1 and .25);
+\draw[/visible on=<9->,violet,line width=1] (-1,-1) arc(-180:0:1 and .25);
 \draw[fill=white] circle(3pt);\\
 \draw[fill=gray!40] (-1,1) arc(-180:0:1) -- cycle;
-\draw[postaction={/visible on=<9->,draw=orange,line width=1},fill=gray] (0,1) circle(1 and .25);
+\draw[postaction={/visible on=<10->,draw=orange,line width=1},fill=gray] (0,1) circle(1 and .25);
 \draw[fill=white] circle(3pt);\\
 \fill[gray] (-1,.4) arc(90:0:.6 and .3) arc(-180:0:.4 and .1) arc(180:90:.6 and .3) -- (1,0) to[bend left] (-1,0) -- cycle;
 \fill[gray!40] (-1,-1) to[bend left] (1,-1) -- (1,-.2) arc(-90:-180:.6 and .3) arc(0:-180:.4 and .1) arc(0:-90:.6 and .3) -- cycle;
@@ -222,13 +222,13 @@ maximum/.style={
 small segment down={#1}{.2}{maximum color}{maximum color}
 },
 saddle up/.style n args={3}{
-small segment up={#2}{.2}{saddle up color},
-small segment up={#3}{.2}{saddle up color},
+small segment up={#2}{.2}{saddle up color}{saddle up color},
+small segment up={#3}{.2}{saddle up color}{saddle up color},
 large segment down={#1}{#2}{#3}{.2}{saddle up color}{saddle up color}
 },
 saddle down/.style n args={3}{
-small segment down={#2}{.2}{saddle down color},
-small segment down={#3}{.2}{saddle down color},
+small segment down={#2}{.2}{saddle down color}{saddle down color},
+small segment down={#3}{.2}{saddle down color}{saddle down color},
 large segment up={#1}{#2}{#3}{.2}{saddle down color}{saddle down color}
 },
 manifold 1,
