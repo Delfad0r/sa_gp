@@ -7,6 +7,18 @@
 % Beamer
 \setbeamertemplate{navigation symbols}{}
 \newenvironment{frame*}{\begin{frame}{\secname}{\subsecname}}{\end{frame}}
+\usepackage{multicol}
+
+% Minipage patch
+\usepackage{xpatch}
+\makeatletter
+\xpatchcmd{\@iiiminipage}{%
+  \let\@listdepth\@mplistdepth \@mplistdepth\z@
+}{%
+  \let\@listdepth\@mplistdepth
+  \@mplistdepth\@enumdepth  % use the current depth (stored in \@enumdepth
+}{\typeout{Patching minipage succeeded}}{\typeout{Patching failed}}% End of patching
+\makeatother
 
 %C++ logo
 \usepackage{texlogos}

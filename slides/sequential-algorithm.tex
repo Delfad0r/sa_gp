@@ -2,13 +2,21 @@
 
 \subsection*{Informal description}
 \begin{frame}[fragile]{\secname}{\subsecname}
+\colorlet{topcolor}{gray!40!white!30!red}
+\colorlet{bottomcolor}{gray!40!white!30!blue}
+\alt<2-4>{\def\preimageh{14}}{\def\preimageh{16}}
+\begin{tikzpicture}
+\tikzmath{\hpercentloc=int(\preimageh/25*100);}
+\xdef\hpercent{\hpercentloc}
+\end{tikzpicture}
+\colorlet{preimagecol}{topcolor!\hpercent!bottomcolor}
 \begin{itemize}
 \item<1-> Process the vertices of the mesh by \textbf{increasing} value of $f$.
 \item<2-> Construct the Reeb graph $\mathcal{R}(f)$ incrementally.
 \item<3-> While sweeping upwards, keep:
 \begin{itemize}
 \item<3-> the \textbf{partial Reeb graph} constructed so far;
-\item<4-> the current \sidenotehighlight<1>{\textbf{level set}}{\draw node[anchor=north west,text width=3.7cm] (target) at (.5,-.3) {each connected component corresponds to an open edge of the partial Reeb graph} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $f^{-1}(r)$.
+\item<4-> the current \setsidenotecolor[preimagecol]\sidenotehighlight<4->{\textbf{level set}}{\draw[/visible on=<4>] node[anchor=north west,text width=3.7cm] (target) at (.5,-.3) {each connected component corresponds to an open edge of the partial Reeb graph} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}\setsidenotecolor{} $f^{-1}(r)$.
 \end{itemize}
 \item<5-> When processing a vertex, \textbf{update} the level set and the Reeb graph accordingly.
 \end{itemize}
@@ -17,11 +25,6 @@
 \begin{tikzpicture}
 \path (-2,-.1) rectangle (2.7,3.3);
 \begin{scope}[small,transform canvas={scale=.5}]
-\colorlet{topcolor}{gray!40!white!30!red}
-\colorlet{bottomcolor}{gray!40!white!30!blue}
-\alt<2-4>{\def\preimageh{14}}{\def\preimageh{16}}
-\tikzmath{\hpercent=int(\preimageh/25*100);}
-\colorlet{preimagecol}{topcolor!\hpercent!bottomcolor}
 \begin{scope}[shift={(-12,0)}]
 \draw[black,line width=2pt] (-1.5pt,0) rectangle (1.5pt,25);
 \path[decorate,decoration={markings,mark=at position 1 with{\arrow{Latex[line width=1pt,fill=topcolor,scale=3]};}}] (0,0) to node[left,scale=2] {$f$} ($(0,25)+(0,13pt)$);
@@ -36,11 +39,11 @@
 \pic{reeb graph={manifold 1,manifold bg}};
 \end{scope}
 \pic{reeb graph={manifold 1,
-preimage edge/.style={partial edge={#1}{}{absolute slice={\preimageh}{slice}{\pic[preimagecol,line width=1pt,fill=gray]{slice circle 1={.07cm between (slice-2) and (slice-1)}};}}},
-preimage disk/.style={partial edge={#1}{draw=black,opacity=.6,line width=2pt}{absolute up to={\preimageh}{\fill[black,opacity=.6] circle(2pt);}}},
+preimage edge/.style={partial edge={#1}{}{absolute slice={\preimageh}{slice}{\pic[preimagecol,/alt=<2-3>{line width=1pt}{line width=1.5pt},fill=gray]{slice circle 1={.07cm between (slice-2) and (slice-1)}};}}},
+preimage disk/.style={partial edge={#1}{draw=black,opacity=.6,line width=2pt,densely dashed}{absolute up to={\preimageh}{}}},
 /only=<2-4>{preimage edge/.list={7,8,10}},
 /only=<3-4>{preimage disk/.list={7,8,10}},
-/only=<5->{preimage edge=10,preimage disk=10,large segment up={9}{7}{8}{\preimageh}{black}{preimagecol},partial edge={9}{draw=black,opacity=.6,line width=2pt}{absolute up to={\preimageh}{\fill[black,opacity=.6] circle(2pt);}},some edges={7,8}{draw=black,opacity=.6,line width=2pt}},
+/only=<5->{preimage edge=10,preimage disk=10,large segment up={9}{7}{8}{\preimageh}{black}{preimagecol},partial edge={9}{draw=black,opacity=.6,line width=2pt,densely dashed}{absolute up to={\preimageh}{}},some edges={7,8}{draw=black,opacity=.6,line width=2pt}},
 /only=<3->{some edges={1,2,3,4,5,6}{draw=black,opacity=.6,line width=2pt},some nodes={1,2,3,4,5,6,7}{\draw[fill=white,line width=1pt] circle(3pt);}},
 /only=<5->{node={8}{\draw[fill=white,line width=1pt] circle(3pt);}},
 }};

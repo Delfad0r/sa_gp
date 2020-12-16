@@ -1,5 +1,31 @@
 ﻿\def\colorlist{"red","lime!80!green","violet","green","orange","cyan","green!80!blue!90!black","brown!90!black","yellow!70!orange","teal","pink","magenta","blue","olive"}
 \newcommand{\getedgecolor}[2][\thiscolor]{\tikzmath{#1={\colorlist}[int(#2)-1];}}
+\pgfkeys{
+/reeb graph settings/.cd,
+manifold bg/.style={contour,plain background={gray!40}},
+small segment up/.style n args={4}{
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#1}{\thickness+.5*\linewidth}{fill=#3}}{relative up to={#2}{},relative down to={0}{}},
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#1}{\thickness-.5*\linewidth}{fill=gray!40}}{relative up to={#2}{},relative down to={0}{},relative slice={#2}{slice}{\pic[#4,line width=1pt,fill=gray]{slice circle 1={.07 cm between (slice-2) and (slice-1)}};}},
+},
+small segment down/.style n args={4}{
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#1}{\thickness+.5*\linewidth}{fill=#3}}{relative down to={-#2}{},relative up to={-0.001}{}},
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#1}{\thickness-.5*\linewidth}{fill=gray!40}}{relative down to={-#2}{},relative up to={-0.001}{}},
+partial edge={#1}{}{relative slice={-.2}{slice}{\pic[opacity=0,fill opacity=1,fill=gray!40]{slice circle 1={.07cm between (slice-2) and (slice-1)}};\pic[#4,line width=1pt]{slice circle 2={.07 cm between (slice-2) and (slice-1)}};}},
+},
+large segment up/.style n args={6}{
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#2}{\thickness+.5*\linewidth}{fill=#5},outline edge={#3}{\thickness+.5*\linewidth}{fill=#5}}{relative up to={#4}{\coordinate (p);},relative down to={0}{}},
+partial edge={#2}{}{/utils/exec={\tikzmath{coordinate \p;\p=(p);}},absolute slice={\py}{slice-l}{}},
+partial edge={#3}{}{/utils/exec={\tikzmath{coordinate \p;\p=(p);}},absolute slice={\py}{slice-r}{}},
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#2}{\thickness-.5*\linewidth}{fill=gray!40},outline edge={#3}{\thickness-.5*\linewidth}{fill=gray!40}}{relative up to={#4}{},relative down to={0}{}},
+/utils/exec={\pic[#6,line width=1,fill=gray]{slice circle 1=.07cm between (slice-r-2) and (slice-l-1)};},},
+large segment down/.style n args={6}{
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#2}{\thickness+.5*\linewidth}{fill=#5},outline edge={#3}{\thickness+.5*\linewidth}{fill=#5}}{relative down to={-#4}{\coordinate (p);},relative up to={-0.001}{}},
+partial edge={#2}{}{/utils/exec={\tikzmath{coordinate \p;\p=(p);}},absolute slice={\py}{slice-l}{}},
+partial edge={#3}{}{/utils/exec={\tikzmath{coordinate \p;\p=(p);}},absolute slice={\py}{slice-r}{}},
+partial edge={#1}{/reeb graph settings/.cd,outline edge={#2}{\thickness-.5*\linewidth}{fill=gray!40},outline edge={#3}{\thickness-.5*\linewidth}{fill=gray!40}}{relative down to={-#4}{},relative up to={-0.001}{}},
+/utils/exec={\pic[opacity=0,fill opacity=1,fill=gray!40]{slice circle 1=.07cm between (slice-r-2) and (slice-l-1)};\pic[#6,line width=1]{slice circle 2=.07cm between (slice-r-2) and (slice-l-1)};},
+}}
+
 \tikzset{reeb graph/.pic={
 	\begin{scope}[local bounding box=bbox]
 	\pgfkeys{/reeb graph settings/.cd,defaults,#1}
@@ -166,14 +192,17 @@ absolute down to/.code 2 args={
 relative slice/.code n args={3}{
 \pgfkeysalso{get relative partial edge coordinates={-slice}{#1},edgen/.get=\edgen,/reeb graph settings/.cd,outline edge={\edgen}{\thickness}{name path=second}}
 \path[name path=first] (bbox.south west|--slice) -- (bbox.south east|--slice);
-\path[name intersections={of=first and second,name={#2}}];
+\path[name intersections={of=first and second,sort by=first,name={#2}}];
 \expandafter\gdef\expandafter\codeToExecuteAfterEdge\expandafter{\codeToExecuteAfterEdge #3}
+\pgfkeysalso{/reeb graph settings/partial edge settings/.cd}
 },
 absolute slice/.code n args={3}{
-\pgfkeysalso{get absolute partial edge coordinates={-slice}{#1},edgen/.get=\edgen,/reeb graph settings/.cd,outline edge={\edgen}{\thickness}{name path=second}}
+\coordinate (-slice) at (0,#1);
+\pgfkeysalso{edgen/.get=\edgen,/reeb graph settings/.cd,outline edge={\edgen}{\thickness}{name path=second}}
 \path[name path=first] (bbox.south west|--slice) -- (bbox.south east|--slice);
-\path[name intersections={of=first and second,name={#2}}];
+\path[name intersections={of=first and second,sort by=first,name={#2}}];
 \expandafter\gdef\expandafter\codeToExecuteAfterEdge\expandafter{\codeToExecuteAfterEdge #3}
+\pgfkeysalso{/reeb graph settings/partial edge settings/.cd}
 },
 }
 \pgfkeys{
@@ -198,7 +227,9 @@ pics/slice circle 1/.style args={#1 between #2 and #3}{slice arc=0:360:#1 betwee
 pics/slice circle 2/.style args={#1 between #2 and #3}{code={\pic[dashed,opacity=.5]{slice arc=0:180:#1 between #2 and #3};\pic{slice arc=0:-180:#1 between #2 and #3};}},
 }
 
+
 \begin{tikzpicture}[x={(.25,0)},y={(0,.25)}]
+
 \pic{reeb graph={
 	line width=1pt,
 	thickness=.3cm,
@@ -235,10 +266,10 @@ pics/slice circle 2/.style args={#1 between #2 and #3}{code={\pic[dashed,opacity
 	%contour,
 	%plain background={gray!50},
 	every edge={preaction={draw=black,line width=2pt},draw=\thiscolor,line width=1pt},
-	partial edge={7}{draw}{relative down to={.3}{\fill[red] circle(2pt);},relative up to={0.9}{\fill[blue] circle(2pt);},relative slice={.5}{aa}{\pic[blue]{slice circle 2=.2cm between (aa-2) and (aa-1)};}},
+	%partial edge={7}{draw}{relative down to={.3}{\fill[red] circle(2pt);},relative up to={0.9}{\fill[blue] circle(2pt);},relative slice={.5}{aa}{\pic[blue]{slice circle 2=.2cm between (aa-2) and (aa-1)};}},
 	%outline edge={7}{\thickness+.5*\linewidth}{fill=gray},
-	every node={\draw[black,line width=1pt,fill=white] circle(2pt);},
+	%every node={\draw[black,line width=1pt,fill=white] circle(2pt);},
 	debug,
 }};
 %\foreach \c [count=\i] in \colorlist {\getedgecolor[\c]{\i}\fill[\c] (\i,0) circle (.5cm);}
-\end{tikzpicture}e}
+\end{tikzpicture}

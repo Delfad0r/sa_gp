@@ -9,7 +9,7 @@
 \item A local growth is started at every minimum.
 \item Each local growth spreads independently with an ordered BFS.
 \item Each local growth updates its own preimage graph $G_r$.
-\item \textbf{Join saddles}: wait until all involved local growths have reached the saddle, then join them.
+\item \textbf{Join saddles}: wait until all the involved local growths have reached the saddle, then join them.
 \item \textbf{Split saddles}: the new open edges in $\mathcal{R}(f)$ are handled by the same local growth.
 \end{itemize}
 \end{itemize}
@@ -20,14 +20,14 @@
 \begin{block}{Data structures}
 Each local growth keeps:
 \begin{itemize}
-\item a \sidenotehighlight{\textbf{Fibonacci heap}}{\draw node[anchor=north west] (target) at (.5,-.3) {can be merged in $O(1)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $\theta$ to store candidates for the \sidenotehighlight{ordered}{\draw node[anchor=south east,text width=2.5cm,align=right] (target) at (-.5,.3) {candidates are sorted by $f$ value} (mymark) to [out=90,in=-10] ([yshift=-7pt]target.north east);} BFS;
-\item an \sidenotehighlight{\textbf{ST-tree}}{\draw node[anchor=north west] (target) at (.5,-.3) {can be merged in $O(1)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $G_r$ to store the preimage graph. 
+\item a \sidenotehighlight<1>{\textbf{Fibonacci heap}}{\draw node[anchor=north west] (target) at (.5,-.3) {can be merged in $O(1)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $\theta$ to store candidates for the \sidenotehighlight<1>{ordered}{\draw node[anchor=south east,text width=2.5cm,align=right] (target) at (-.5,.3) {candidates are sorted by $f$ value} (mymark) to [out=90,in=-10] ([yshift=-7pt]target.north east);} BFS;
+\item an \sidenotehighlight<1>{\textbf{ST-tree}}{\draw node[anchor=north west] (target) at (.5,-.3) {can be merged in $O(1)$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);} $G_r$ to store the preimage graph. 
 \end{itemize}
 \end{block}
 \begin{block}{Join saddles}
 What if a saddle joins components from different local growths?
 \begin{itemize}
-\item \sidenotehighlight{\textbf{Detection}}{\draw node[anchor=north west,text width=6cm] (target) at (.5,-.3cm-1em) {concretely, update an atomic counter $\text{visitedLower}[v]$ and check whether $\text{visitedLower}[v]=|\Link^-(v)|$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}: before processing a vertex $v$, check whether all the vertices in $\Link^-(v)$ have already been visited.
+\item \sidenotehighlight<1>{\textbf{Detection}}{\draw node[anchor=north west,text width=6cm] (target) at (.5,-.3cm-1em) {concretely, update an atomic counter $\text{visitedLower}[v]$ and check whether $\text{visitedLower}[v]=|\Link^-(v)|$} (mymark) to[out=-90,in=170] ([yshift=-7pt]target.north west);}: before processing a vertex $v$, check whether all the vertices in $\Link^-(v)$ have already been visited.
 \item \textbf{Stopping}: if not, terminate this local growth.
 \item \textbf{Processing}: otherwise, this local growth is in charge of proceeding;
 \begin{itemize}
@@ -55,15 +55,15 @@ What if a saddle joins components from different local growths?
    \While{\tikzmarknode{while}{$\theta\ne\emptyset$}}{
         $v$ $\leftarrow$ vertex in $\theta$ with minimal $f$ value\;
         %$\incr$ $\leftarrow$ $\left|\{w\in\Link^-(v):\text{$w$ was visited by this local growth}\}\right|$\;
-        \tikzmarknode{A}{}\sidenotehighlight{update $\visitedLower[v]$}{\draw node[anchor=west] (target) at ([xshift=1.5cm]while) {add $\left|\left\{w\in\Link^-(v):\text{$w$ visited by this local growth}\right\}\right|$} (mymark) to[out=90,in=190] (target.west);} \;
+        \tikzmarknode{A}{}\sidenotehighlight<1>{update $\visitedLower[v]$}{\draw node[anchor=west] (target) at ([xshift=1.5cm]while) {add $\left|\left\{w\in\Link^-(v):\text{$w$ visited by this local growth}\right\}\right|$} (mymark) to[out=90,in=190] (target.west);} \;
         \If{$\visitedLower[v]<|\Link^-(v)|$}{
             append $(\theta,G_r)$ to $\pending[v]$\;
             \Return\;
-        }\sidenote{}{\coordinate (B) at ($(mymark)+(5.7cm,.8\baselineskip)$);\coordinate (C) at ($(A)+(-2pt,.8\baselineskip)$);\draw[-,dotted,thick] (C)  -- ($(A)+(5.7cm,.8\baselineskip)$) edge[-,solid,decorate,decoration={brace}] node[right,inner xsep=10] {critical section} (B) (B) -- ($(mymark)+(-2pt,.8\baselineskip)$) -- (C);}%
+        }\sidenote<1>{}{\coordinate (B) at ($(mymark)+(5.7cm,.8\baselineskip)$);\coordinate (C) at ($(A)+(-2pt,.8\baselineskip)$);\draw[-,dotted,thick] (C)  -- ($(A)+(5.7cm,.8\baselineskip)$) edge[-,solid,decorate,decoration={brace}] node[right,inner xsep=10] {critical section} (B) (B) -- ($(mymark)+(-2pt,.8\baselineskip)$) -- (C);}%
         \ForEach{$(\theta',G_r')\in\pending[v]$}{
             $\theta.\join{$\theta'$}$; $G_r.\join{$G_r'$}$\;
         }
-        \sidenotehighlight{process $v$, updating $G_r$, $\mathcal{R}$ and $\Phi$}{\draw node[anchor=north] (target) at (.2,-.7) {just as in the sequential algorithm} (mymark.east) to[out=-10,in=10,looseness=1.5] (target.east);}\;
+        \sidenotehighlight<1>{process $v$, updating $G_r$, $\mathcal{R}$ and $\Phi$}{\draw node[anchor=north] (target) at (.2,-.7) {just as in the sequential algorithm} (mymark.east) to[out=-10,in=10,looseness=1.5] (target.east);}\;
         add vertices in $\Link^+(v)$ to $\theta$\;
     }
 }
@@ -77,13 +77,13 @@ What if a saddle joins components from different local growths?
 \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
 \SetKwFunction{FindMinima}{FindMinima}
 \SetKwFunction{LocalGrowth}{LocalGrowth}
-\SetKwFor{ForEachParallel}{foreach}{\sidenotehighlight{in parallel}{} do}{end}
+\SetKwFor{ForEachParallel}{foreach}{\sidenotehighlight<1>{in parallel}{} do}{end}
 
 \Input{a triangulated mesh $\mathcal{M}$\newline a scalar field $f$ on $\mathcal{M}$}
 \Output{the augmented Reeb graph $(\mathcal{R},\Phi)$}
 \Begin{
 $\mathcal{R}$, $\Phi$ $\leftarrow$ $\emptyset$ \textcolor{gray}{[graph]}, $\emptyset$ \textcolor{gray}{[function]}\;
-$V$ $\leftarrow$ \sidenotehighlight{\FindMinima{$\mathcal{M},f$}}{\draw node[anchor=west] (target) at (2.5,0) {easy to run in parallel} (mymark) to (target.west);}\;
+$V$ $\leftarrow$ \sidenotehighlight<1>{\FindMinima{$\mathcal{M},f$}}{\draw node[anchor=west] (target) at (2.5,0) {easy to run in parallel} (mymark) to (target.west);}\;
 \ForEachParallel{$v_0\in V$}{
     start procedure \LocalGrowth{$v_0,\mathcal{R},\Phi$}\;
 }
@@ -91,6 +91,8 @@ $V$ $\leftarrow$ \sidenotehighlight{\FindMinima{$\mathcal{M},f$}}{\draw node[anc
 }
 \end{algorithm}
 \end{frame*}
+
+\end{document}
 
 \subsection*{Optimizations}
 \begin{frame*}
