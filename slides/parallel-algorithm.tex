@@ -100,8 +100,8 @@ What if a saddle joins components from different local growths?
 \vspace{-.25cm}
 \begin{minipage}[t]{.65\textwidth}
 \begin{itemize}
-\item<10-> \textbf{Stopping}: if not, terminate this local growth.
-\item<11-> \textbf{Processing}: otherwise, this local growth is in charge of proceeding;
+\item<10-> \textbf{Stopping}: if not, terminate \textcolor{cyan}{this local growth}.
+\item<11-> \textbf{Processing}: otherwise, \textcolor{red}{this local growth} is in charge of proceeding;
 \begin{itemize}
 \item<12-> join the priority queues ($\theta$) and the preimage graphs ($G_r$) of all local growths terminated at $v$;
 \item<13-> process $v$ as usual.
@@ -227,8 +227,8 @@ $V$ $\leftarrow$ \sidenotehighlight<2>{\FindMinima{$\mathcal{M},f$}}{\draw node[
 \begin{frame}[fragile]{\secname}{\subsecname}
 \begin{block}{\sidenote<7->{Laziness}{\draw[shorten <=3pt] node[anchor=west] (target) at (2,0) {decreased number of operations on ST-trees} (mymark.east) to (target.west);}}
 \begin{itemize}
-\item<2-> Instead of inserting and removing edges is $G_r$, keep a \sidenotehighlight<3>{\textbf{history list}}{\draw node[anchor=north east] (target) at (-.7,-.8) {one for each open edge in $\mathcal{R}$} (mymark.south) to[out=-90,in=10] ([yshift=-7pt]target.north east);}.
-\item<4-> When a \sidenotehighlight<5>{critical point}{\draw node[anchor=north west,text width=4cm] (target) at (.6,-1.1) {requires a pre-processing step to identify the critical points} (mymark.south) to[out=-90,in=170] ([yshift=-7pt]target.north west);} is reached, discard all edges marked as both added and deleted.
+\item<2-> Instead of inserting and removing arcs is $G_r$, keep a \sidenotehighlight<3>{\textbf{history list}}{\draw node[anchor=north east] (target) at (-.7,-.8) {one for each open arc in $\mathcal{R}$} (mymark.south) to[out=-90,in=10] ([yshift=-7pt]target.north east);}.
+\item<4-> When a \sidenotehighlight<5>{critical point}{\draw node[anchor=north west,text width=4cm] (target) at (.6,-1.1) {requires a pre-processing step to identify the critical points} (mymark.south) to[out=-90,in=170] ([yshift=-7pt]target.north west);} is reached, discard all arcs marked as both added and deleted.
 \item<6-> Perform all the other operations on $G_r$.
 \end{itemize}
 \end{block}
@@ -274,7 +274,7 @@ downward local growth={13}{orange},
 \end{minipage}
 \vspace{.05cm}
 \begin{itemize}
-\item<12-> Post-processing step to merge edges that have been created twice.
+\item<12-> Post-processing step to merge arcs that have been created twice.
 \end{itemize}
 \end{block}
 \end{frame}
