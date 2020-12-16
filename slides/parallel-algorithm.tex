@@ -3,14 +3,14 @@
 \subsection*{Core ideas}
 \begin{frame}[fragile]{\secname}{\subsecname}
 \begin{itemize}
-\item[{\tikz\node[inner sep=0,opacity=.5]{\usebeamertemplate**{itemize item}};}] \textcolor{gray}{\textbf{Sequential}: single procedure sweeping all the vertices sequentially.}
+\item[{\tikz\node[inner sep=0,/only=<2->{opacity=.5}]{\usebeamertemplate**{itemize item}};}] {\only<2->{\color{gray}}\textbf{Sequential}: single procedure sweeping all the vertices sequentially.}
 \item<2-> \textbf{Parallel}: multiple procedures (local growths) running simultaneously.
 \begin{itemize}
 \item<3-> A local growth is started at every minimum.
 \item<4-> Each local growth spreads independently with an ordered BFS.
 \item<5-> Each local growth updates its own preimage graph $G_r$.
 \item<6-> \textbf{Join saddles}: wait until all the involved local growths have reached the saddle, then join them.
-\item<9-11> \textbf{Split saddles}: the new open edges in $\mathcal{R}(f)$ are handled by the same local growth.
+\item<9-11> \textbf{Split saddles}: the new open arcs in $\mathcal{R}(f)$ are handled by the same local growth.
 \end{itemize}
 \end{itemize}
 \begin{center}
@@ -108,6 +108,63 @@ What if a saddle joins components from different local growths?
 \end{itemize}
 \end{itemize}
 \end{minipage}
+\begin{minipage}[t]{.3\textwidth}
+\begin{center}
+\tikzexternalenable
+\begin{tikzpicture}[x={(.25,0)},y={(0,.25)},baseline={(0,5)}]
+\clip (-1,10) rectangle (9,19);
+\pic{reeb graph={
+line width=1pt,
+thickness=.3cm,
+nodes={
+down={(3,8)},
+up={(6,5)},
+down={(9,13)},
+up={(5,15)},
+down={(4,18)},
+up={(10,20)},
+down={(-2,23)},
+},
+add edge={(2) to[out=90,in=-90] (3)},
+add edge={(1) to[out=170,in=190] (4)},
+add edge={(3) to[out=170,in=-10] (4)},
+add edge={(4) to[out=90,in=-90] (5)},
+add edge={(5) to[out=10,in=190] (6)},
+add edge={(5) to[out=170,in=-90] (7)},
+/only=<7->{
+contour,
+plain background={gray!50},},
+/only=<13>{partial segment={4}{\fill[red!40] (bbox.south west) rectangle (bbox.north east);}{relative down to=0,absolute up to=15.8}},
+/only=<7->{
+outline edge={1}{\thickness-.5*\linewidth}{fill=cyan!40},
+partial segment={3}{\fill[cyan!40] (bbox.south west) rectangle (bbox.north east);}{relative up to={-.001}},
+some edges={1,3}{draw=cyan,line width=2pt,preaction={draw=black,line width=3pt}}
+},
+/only=<11->{
+segment={2}{\fill[red!40] (bbox.south west) rectangle (bbox.north east);},
+edge={2}{draw=red,line width=2pt,preaction={draw=black,line width=3pt}},
+},
+/only=<7-10>{
+partial segment={2}{\fill[red!40] (bbox.south west) rectangle (bbox.north east);}{absolute up to={12.8}},
+partial edge={2}{draw=red,line width=2pt,preaction={draw=black,line width=3pt}}{absolute up to={12.8}{}},
+partial edge={3}{}{relative slice={-.001}{slice}{\pic[line width=1.5pt,cyan,fill=cyan!50!white!70!black]{slice circle 1=.07cm between (slice-2) and (slice-1)};}},
+partial edge={2}{}{absolute slice={12.8}{slice}{\pic[line width=1.5pt,red,fill=red!50!white!70!black]{slice circle 1=.07cm between (slice-2) and (slice-1)};}},
+},
+/only=<11-12>{
+partial edge={3}{}{relative slice={-.001}{slice}{\pic[line width=1.5pt,/alt=<11>{cyan,fill=cyan!50!white!70!black}{red,fill=red!50!white!70!black}]{slice circle 1=.07cm between (slice-2) and (slice-1)};}},
+partial edge={2}{}{relative slice={-.001}{slice}{\pic[line width=1.5pt,red,fill=red!50!white!70!black]{slice circle 1=.07cm between (slice-2) and (slice-1)};}},
+},
+/only=<13>{
+partial edge={4}{draw=red,line width=2pt,preaction={draw=black,line width=3pt}}{absolute up to={15.8}{}},
+partial edge={2}{}{absolute slice={15.8}{slice-l}{}},
+partial edge={3}{}{absolute slice={15.8}{slice-r}{\pic[line width=1.5pt,red,fill=red!50!white!70!black]{slice circle 1=.07cm between (slice-r-2) and (slice-l-1)};}}
+},
+some nodes={3,4}{\draw[black,fill=white,line width=1pt] circle (3pt);},
+}};
+\end{tikzpicture}
+\tikzexternaldisable
+\end{center}
+\end{minipage}
 \end{block}
 \end{frame*}
 
@@ -128,15 +185,15 @@ What if a saddle joins components from different local growths?
    \While{\tikzmarknode{while}{$\theta\ne\emptyset$}}{
         $v$ $\leftarrow$ vertex in $\theta$ with minimal $f$ value\;
         %$\incr$ $\leftarrow$ $\left|\{w\in\Link^-(v):\text{$w$ was visited by this local growth}\}\right|$\;
-        \tikzmarknode{A}{}\sidenotehighlight<1>{update $\visitedLower[v]$}{\draw node[anchor=west] (target) at ([xshift=1.5cm]while) {add $\left|\left\{w\in\Link^-(v):\text{$w$ visited by this local growth}\right\}\right|$} (mymark) to[out=90,in=190] (target.west);} \;
+        \tikzmarknode{A}{}\sidenotehighlight<3>{update $\visitedLower[v]$}{\draw node[anchor=west] (target) at ([xshift=1.5cm]while) {add $\left|\left\{w\in\Link^-(v):\text{$w$ visited by this local growth}\right\}\right|$} (mymark) to[out=90,in=190] (target.west);} \;
         \If{$\visitedLower[v]<|\Link^-(v)|$}{
             append $(\theta,G_r)$ to $\pending[v]$\;
             \Return\;
-        }\sidenote<1>{}{\coordinate (B) at ($(mymark)+(5.7cm,.8\baselineskip)$);\coordinate (C) at ($(A)+(-2pt,.8\baselineskip)$);\draw[-,dotted,thick] (C)  -- ($(A)+(5.7cm,.8\baselineskip)$) edge[-,solid,decorate,decoration={brace}] node[right,inner xsep=10] {critical section} (B) (B) -- ($(mymark)+(-2pt,.8\baselineskip)$) -- (C);}%
+        }\sidenote<2->{}{\coordinate (B) at ($(mymark)+(5.7cm,.8\baselineskip)$);\coordinate (C) at ($(A)+(-2pt,.8\baselineskip)$);\draw[-,dotted,thick] (C)  -- ($(A)+(5.7cm,.8\baselineskip)$) edge[-,solid,decorate,decoration={brace}] node[right,inner xsep=10] {critical section} (B) (B) -- ($(mymark)+(-2pt,.8\baselineskip)$) -- (C);}%
         \ForEach{$(\theta',G_r')\in\pending[v]$}{
             $\theta.\join{$\theta'$}$; $G_r.\join{$G_r'$}$\;
         }
-        \sidenotehighlight<1>{process $v$, updating $G_r$, $\mathcal{R}$ and $\Phi$}{\draw node[anchor=north] (target) at (.2,-.7) {just as in the sequential algorithm} (mymark.east) to[out=-10,in=10,looseness=1.5] (target.east);}\;
+        \sidenotehighlight<4>{process $v$, updating $G_r$, $\mathcal{R}$ and $\Phi$}{\draw node[anchor=north] (target) at (.2,-.7) {just as in the sequential algorithm} (mymark.east) to[out=-10,in=10,looseness=1.5] (target.east);}\;
         add vertices in $\Link^+(v)$ to $\theta$\;
     }
 }
@@ -150,13 +207,13 @@ What if a saddle joins components from different local growths?
 \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
 \SetKwFunction{FindMinima}{FindMinima}
 \SetKwFunction{LocalGrowth}{LocalGrowth}
-\SetKwFor{ForEachParallel}{foreach}{\sidenotehighlight<1>{in parallel}{} do}{end}
+\SetKwFor{ForEachParallel}{foreach}{\sidenotehighlight<3>{in parallel}{} do}{end}
 
 \Input{a triangulated mesh $\mathcal{M}$\newline a scalar field $f$ on $\mathcal{M}$}
 \Output{the augmented Reeb graph $(\mathcal{R},\Phi)$}
 \Begin{
 $\mathcal{R}$, $\Phi$ $\leftarrow$ $\emptyset$ \textcolor{gray}{[graph]}, $\emptyset$ \textcolor{gray}{[function]}\;
-$V$ $\leftarrow$ \sidenotehighlight<1>{\FindMinima{$\mathcal{M},f$}}{\draw node[anchor=west] (target) at (2.5,0) {easy to run in parallel} (mymark) to (target.west);}\;
+$V$ $\leftarrow$ \sidenotehighlight<2>{\FindMinima{$\mathcal{M},f$}}{\draw node[anchor=west] (target) at (2.5,0) {easy to run in parallel} (mymark) to (target.west);}\;
 \ForEachParallel{$v_0\in V$}{
     start procedure \LocalGrowth{$v_0,\mathcal{R},\Phi$}\;
 }
@@ -165,25 +222,59 @@ $V$ $\leftarrow$ \sidenotehighlight<1>{\FindMinima{$\mathcal{M},f$}}{\draw node[
 \end{algorithm}
 \end{frame*}
 
-\end{document}
 
 \subsection*{Optimizations}
-\begin{frame*}
-\begin{block}{\sidenote{Laziness}{\draw[shorten <=3pt] node[anchor=west] (target) at (2,0) {decreased number of operations on ST-trees} (mymark.east) to (target.west);}}
+\begin{frame}[fragile]{\secname}{\subsecname}
+\begin{block}{\sidenote<7->{Laziness}{\draw[shorten <=3pt] node[anchor=west] (target) at (2,0) {decreased number of operations on ST-trees} (mymark.east) to (target.west);}}
 \begin{itemize}
-\item Instead of inserting and removing edges is $G_r$, keep a \sidenotehighlight{\textbf{history list}}{\draw node[anchor=north east] (target) at (-.7,-.8) {one for each open edge in $\mathcal{R}$} (mymark.south) to[out=-90,in=10] ([yshift=-7pt]target.north east);}.
-\item When a \sidenotehighlight{critical point}{\draw node[anchor=north west,text width=4cm] (target) at (.6,-1.1) {requires a pre-processing step to identify the critical points} (mymark.south) to[out=-90,in=170] ([yshift=-7pt]target.north west);} is reached, discard all edges marked as both added and deleted.
-\item Perform all the other operations on $G_r$.
+\item<2-> Instead of inserting and removing edges is $G_r$, keep a \sidenotehighlight<3>{\textbf{history list}}{\draw node[anchor=north east] (target) at (-.7,-.8) {one for each open edge in $\mathcal{R}$} (mymark.south) to[out=-90,in=10] ([yshift=-7pt]target.north east);}.
+\item<4-> When a \sidenotehighlight<5>{critical point}{\draw node[anchor=north west,text width=4cm] (target) at (.6,-1.1) {requires a pre-processing step to identify the critical points} (mymark.south) to[out=-90,in=170] ([yshift=-7pt]target.north west);} is reached, discard all edges marked as both added and deleted.
+\item<6-> Perform all the other operations on $G_r$.
 \end{itemize}
 \end{block}
-\begin{block}{\sidenote{Dual sweep}{\draw[shorten <=3pt] node[anchor=west] (target) at (2,0) {increased number of independent local growths} (mymark.east) to (target.west);}}
+\begin{block}<8->{\sidenote<13>{Dual sweep}{\draw[shorten <=3pt] node[anchor=west] (target) at (2,0) {increased number of independent local growths} (mymark.east) to (target.west);}}
+\begin{minipage}[t]{.5\textwidth}
 \begin{itemize}
-\item Two kinds of local growths:
+\item<9-> Two kinds of local growths:
 \begin{itemize}
-\item \textbf{upward local growths} $\leadsto$ as described before;
-\item \textbf{downward local growths} $\leadsto$ start from maxima and expand downwards.
+\item<10-> \textbf{upward local growths} \\$\leadsto$ as described before;
+\item<11-> \textbf{downward local growths} \\$\leadsto$ start from maxima and expand downwards.
 \end{itemize}
-\item Post-processing step to merge edges that have been created twice.
+\end{itemize}
+\end{minipage}
+\begin{minipage}[t]{.45\textwidth}
+\begin{center}
+\tikzexternalenable
+\begin{tikzpicture}[baseline={(0,2.2)}]
+\path (-.4,-.1) rectangle (1.6,2.2);
+\begin{scope}[small,transform canvas={scale=.33}]
+\pic{reeb graph={manifold 1,manifold bg,
+upward local growth/.style 2 args={
+partial segment={#1}{\fill[#2!40] (bbox.south west) rectangle (bbox.north east);}{relative down to=0,relative up to=.5},
+partial edge={#1}{draw=#2,line width=2pt,preaction={draw=black,line width=3pt}}{relative down to={0}{\draw[black,fill=#2,line width=1pt] circle (3pt);},relative up to={.5}{},relative slice={.5}{slice}{\pic[line width=1.5pt,draw=#2,fill=#2!50!white!70!black]{slice circle 1=.07cm between (slice-2) and (slice-1)};}}
+},
+downward local growth/.style 2 args={
+partial segment={#1}{\fill[#2!40] (bbox.south west) rectangle (bbox.north east);}{relative down to=.5,relative up to=-.001},
+partial edge={#1}{draw=#2,line width=2pt,preaction={draw=black,line width=3pt}}{relative up to={-.001}{\draw[black,fill=#2,line width=1pt] circle (3pt);},relative down to={.5}{},relative slice={.5}{slice}{\pic[opacity=0,fill opacity=1,fill=#2!40]{slice circle 1=.07cm between (slice-2) and (slice-1)};\pic[line width=1.5pt,draw=#2]{slice circle 2=.07cm between (slice-2) and (slice-1)};}}
+},
+/only=<10->{
+upward local growth={1}{red},
+upward local growth={2}{cyan},
+upward local growth={5}{pink},
+},
+/only=<11->{
+downward local growth={12}{green},
+downward local growth={13}{orange},
+}
+}};
+\end{scope}
+\end{tikzpicture}
+\tikzexternaldisable
+\end{center}
+\end{minipage}
+\vspace{.05cm}
+\begin{itemize}
+\item<12-> Post-processing step to merge edges that have been created twice.
 \end{itemize}
 \end{block}
-\end{frame*}
+\end{frame}
